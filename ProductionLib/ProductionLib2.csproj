@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D1BA6F01-BE29-4C40-B371-B52692A56C9F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ProductionLib2</RootNamespace>
+    <AssemblyName>ProductionLib2</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accessibility" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="ProductionLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\ProductionLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DpatBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DpatBox.Designer.cs">
+      <DependentUpon>DpatBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmProductionTestInput2.xaml.cs">
+      <DependentUpon>frmProductionTestInput2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="InsepctRevisionMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InsepctRevisionMessage.Designer.cs">
+      <DependentUpon>InsepctRevisionMessage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProductionTestInputForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProductionTestInputForm.Designer.cs">
+      <DependentUpon>ProductionTestInputForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InspectSocketMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InspectSocketMessage.Designer.cs">
+      <DependentUpon>InspectSocketMessage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LockClotho.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="WebQueryBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WebQueryBox.designer.cs">
+      <DependentUpon>WebQueryBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WebServiceQuery.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DpatBox.resx">
+      <DependentUpon>DpatBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InsepctRevisionMessage.resx">
+      <DependentUpon>InsepctRevisionMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionTestInputForm.resx">
+      <DependentUpon>ProductionTestInputForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InspectSocketMessage.resx">
+      <DependentUpon>InspectSocketMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WebQueryBox.resx">
+      <DependentUpon>WebQueryBox.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClothoLibAlgo\ClothoLibAlgo.csproj">
+      <Project>{220A6F97-0A99-4DB8-AAE6-B41B681723E5}</Project>
+      <Name>ClothoLibAlgo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClothoSharedItems\ClothoSharedItems.csproj">
+      <Project>{C403325F-F34D-4993-B1E5-2EFCA24B24D3}</Project>
+      <Name>ClothoSharedItems</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StopWatchManager\StopWatchManager.csproj">
+      <Project>{884d3bd0-9f3e-49c1-89a6-132359a07e13}</Project>
+      <Name>StopWatchManager</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\avgo_wsd.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="frmProductionTestInput2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>NoiseFloorProcessing</name>
+  </assembly>
+  <members>
+    <member name="M:ni_NoiseFloor.ni_NoiseFloor.CreateQueue(System.UInt32@)">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:ni_NoiseFloor.ni_NoiseFloor.EnqueueData(System.UInt32,System.Int32,System.Double,System.Double,System.Single[*],System.Single[*],ni_NoiseFloor.Element[*])">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:ni_NoiseFloor.ni_NoiseFloor.ProcessData(System.UInt32,System.Double[*],System.Double,System.Double,System.Int32,System.Single[*]@)">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+  </members>
+</doc>

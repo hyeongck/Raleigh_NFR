@@ -1,0 +1,245 @@
+{
+  "$id": "1",
+  "version": "1.1",
+  "use": [
+    "JokerNF_systemMap"
+  ],
+  "resources": null,
+  "pinMaps": [
+    {
+      "$id": "2",
+      "name": "P0",
+      "resourcemaps": [
+        {
+          "$id": "3",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "4",
+            "type": "alias",
+            "value": "DM482e_0_Ch0",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "5",
+      "name": "P1",
+      "resourcemaps": [
+        {
+          "$id": "6",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "7",
+            "type": "alias",
+            "value": "DM482e_0_Ch1",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "8",
+      "name": "P2",
+      "resourcemaps": [
+        {
+          "$id": "9",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "10",
+            "type": "alias",
+            "value": "DM482e_0_Ch2",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "11",
+      "name": "DM01",
+      "resourcemaps": [
+        {
+          "$id": "12",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "13",
+            "type": "alias",
+            "value": "DM482e_0",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "14",
+      "name": "P3",
+      "resourcemaps": [
+        {
+          "$id": "15",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "16",
+            "type": "alias",
+            "value": "DM482e_0_Ch3",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "17",
+      "name": "P4",
+      "resourcemaps": [
+        {
+          "$id": "18",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "19",
+            "type": "alias",
+            "value": "DM482e_0_Ch4",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "20",
+      "name": "P5",
+      "resourcemaps": [
+        {
+          "$id": "21",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "22",
+            "type": "alias",
+            "value": "DM482e_0_Ch5",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "23",
+      "name": "P6",
+      "resourcemaps": [
+        {
+          "$id": "24",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "25",
+            "type": "alias",
+            "value": "DM482e_0_Ch6",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "26",
+      "name": "P7",
+      "resourcemaps": [
+        {
+          "$id": "27",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "28",
+            "type": "alias",
+            "value": "DM482e_0_Ch7",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "29",
+      "name": "P8",
+      "resourcemaps": [
+        {
+          "$id": "30",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "31",
+            "type": "alias",
+            "value": "DM482e_0_Ch8",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "32",
+      "name": "P9",
+      "resourcemaps": [
+        {
+          "$id": "33",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "34",
+            "type": "alias",
+            "value": "DM482e_0_Ch9",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "35",
+      "name": "P10",
+      "resourcemaps": [
+        {
+          "$id": "36",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "37",
+            "type": "alias",
+            "value": "DM482e_0_Ch10",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    },
+    {
+      "$id": "38",
+      "name": "P11",
+      "resourcemaps": [
+        {
+          "$id": "39",
+          "head": 0,
+          "site": 0,
+          "resource": {
+            "$id": "40",
+            "type": "alias",
+            "value": "DM482e_0_Ch11",
+            "resources": null,
+            "alias": null
+          }
+        }
+      ]
+    }
+  ],
+  "pinGroupMaps": null
+}

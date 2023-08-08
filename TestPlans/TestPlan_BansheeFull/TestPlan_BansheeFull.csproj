@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4C7C9958-70C6-4E1A-9835-F96FF4490F27}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TestPlan_BansheeFull</RootNamespace>
+    <AssemblyName>TestPlan_BansheeFull</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Avago.ATF.Logger">
+      <HintPath>..\..\..\..\System\Avago.ATF.Logger.dll</HintPath>
+    </Reference>
+    <Reference Include="Avago.ATF.Outlier">
+      <HintPath>..\..\..\..\System\Avago.ATF.Outlier.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Avago.ATF.Shares, Version=3.1.3.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\System\Avago.ATF.Shares.dll</HintPath>
+    </Reference>
+    <Reference Include="Avago.ATF.StandardLibrary">
+      <HintPath>..\..\..\..\System\Avago.ATF.StandardLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="AvagoGU_Legacy">
+      <HintPath>..\..\Lib\AvagoGU_Legacy.dll</HintPath>
+    </Reference>
+    <Reference Include="ClothoLibAlgo_Legacy">
+      <HintPath>..\..\Lib\ClothoLibAlgo_Legacy.dll</HintPath>
+    </Reference>
+    <Reference Include="ClothoLibStandard, Version=1.0.1.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lib\ClothoLibStandard.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\..\Lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="InstrLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lib\InstrLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lib\Ionic.Zip.dll</HintPath>
+    </Reference>
+    <Reference Include="Keysight.KtMPxiChassis.Fx40, Version=1.7.82.1, Culture=neutral, PublicKeyToken=ced78d295d1e0f2b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lib\Keysight.KtMPxiChassis.Fx40.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="ModularZT64">
+      <HintPath>..\..\Lib\ModularZT64.dll</HintPath>
+    </Reference>
+    <Reference Include="ProductionControl_x86">
+      <HintPath>..\..\Lib\ProductionControl_x86.dll</HintPath>
+    </Reference>
+    <Reference Include="ProductionLib">
+      <HintPath>..\..\Lib\ProductionLib.dll</HintPath>
+    </Reference>
+    <Reference Include="SnP_BuddyFileBuilder">
+      <HintPath>..\..\Lib\SnP_BuddyFileBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TestLib_Legacy, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lib\TestLib_Legacy.dll</HintPath>
+    </Reference>
+    <Reference Include="ZDB.ShareLib, Version=1.1.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libs\ZDB.ShareLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TestPlan_BansheeNF.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Aemulus_PXIe_Modules_Info\Aemulus_PXIe_Modules_Info.csproj">
+      <Project>{46444ec7-c6ed-4792-bc33-bcc4ad906b6e}</Project>
+      <Name>Aemulus_PXIe_Modules_Info</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ClothoLibAlgo\ClothoLibAlgo.csproj">
+      <Project>{220a6f97-0a99-4db8-aae6-b41b681723e5}</Project>
+      <Name>ClothoLibAlgo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ClothoSharedItems\ClothoSharedItems.csproj">
+      <Project>{c403325f-f34d-4993-b1e5-2efca24b24d3}</Project>
+      <Name>ClothoSharedItems</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AvagoGuCalVrfy\AvagoGU.csproj">
+      <Project>{2d831cbc-e343-46d5-9e84-0997ad932d0f}</Project>
+      <Name>AvagoGU</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LibEqmtDriver\LibEqmtDriver.csproj">
+      <Project>{9c58f571-2273-496a-8a86-52f062211206}</Project>
+      <Name>LibEqmtDriver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MyProduct\MyProduct.csproj">
+      <Project>{b01071d7-31e5-4f8e-b065-3612f83bc4f0}</Project>
+      <Name>MyProduct</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NI_PXIe_Modules_Info\NI_PXIe_Modules_Info.csproj">
+      <Project>{db138d1b-30fb-4804-b443-cbac8478d65a}</Project>
+      <Name>NI_PXIe_Modules_Info</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ProductionLib\ProductionLib2.csproj">
+      <Project>{d1ba6f01-be29-4c40-b371-b52692a56c9f}</Project>
+      <Name>ProductionLib2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\StopWatchManager\StopWatchManager.csproj">
+      <Project>{884d3bd0-9f3e-49c1-89a6-132359a07e13}</Project>
+      <Name>StopWatchManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TestPlanCommon\TestPlanCommon.csproj">
+      <Project>{2487cd75-7e93-4322-8f08-158da1c11768}</Project>
+      <Name>TestPlanCommon</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>del "$(SolutionDir)Lib\$(TargetFileName)
+xcopy "$(TargetDir)$(TargetFileName)" "$(SolutionDir)Lib"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

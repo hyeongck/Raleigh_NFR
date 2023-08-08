@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B01071D7-31E5-4F8E-B065-3612F83BC4F0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MyProduct</RootNamespace>
+    <AssemblyName>MyProduct</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Avago.ATF.CrossDomainAccess, Version=3.2.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\System\Avago.ATF.CrossDomainAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Avago.ATF.Logger, Version=2.2.6.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\System\Avago.ATF.Logger.dll</HintPath>
+    </Reference>
+    <Reference Include="Avago.ATF.Outlier, Version=3.2.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\System\Avago.ATF.Outlier.dll</HintPath>
+    </Reference>
+    <Reference Include="Avago.ATF.Shares, Version=2.1.8.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\System\Avago.ATF.Shares.dll</HintPath>
+    </Reference>
+    <Reference Include="Avago.ATF.StandardLibrary, Version=2.1.8.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\System\Avago.ATF.StandardLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Ivi.Driver, Version=1.4.0.0, Culture=neutral, PublicKeyToken=a128c98f1d7717c1, processorArchitecture=MSIL" />
+    <Reference Include="Ivi.Visa.Interop, Version=5.0.0.0, Culture=neutral, PublicKeyToken=a128c98f1d7717c1, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\TestPlans\Clarke\Ivi.Visa.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="NationalInstruments.Common, Version=19.0.40.49152, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.LabVIEW.Interop, Version=1.5.0.0, Culture=neutral, PublicKeyToken=daeb5dc76be4e32a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\National Instruments\Shared\LabVIEW Run-Time\2014\NationalInstruments.LabVIEW.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="NationalInstruments.ModularInstruments.Common, Version=19.0.45.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.ModularInstruments.ModularInstrumentsSystem, Version=1.4.45.27, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.ModularInstruments.NIDigital.Fx45, Version=19.0.0.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.ModularInstruments.NIRfsa.Fx45, Version=19.1.5.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.ModularInstruments.NIRfsg.Fx45, Version=19.1.5.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.NI4882, Version=13.0.45.161, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.RFmx.InstrMX.Fx40, Version=20.0.0.49152, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\NationalInstruments.RFmx.InstrMX.Fx40.dll</HintPath>
+    </Reference>
+    <Reference Include="NationalInstruments.RFmx.SpecAnMX.Fx40, Version=20.0.0.49152, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\NationalInstruments.RFmx.SpecAnMX.Fx40.dll</HintPath>
+    </Reference>
+    <Reference Include="NoiseFloorProcessingWrapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LibEqmtDriver\NF_VST\NoiseFloorProcessing\NoiseFloorProcessingWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="ZDB.ShareLib">
+      <HintPath>..\Lib\ZDB.ShareLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MyDUT_Calculate_Function.cs" />
+    <Compile Include="MyDUT_Calibration_Function.cs" />
+    <Compile Include="MyDUT_CustomMipi_Function.cs" />
+    <Compile Include="MyDUT_Handler_Function.cs" />
+    <Compile Include="MyDUT_Init_Function.cs" />
+    <Compile Include="MyDUT_Trace_Function.cs" />
+    <Compile Include="MyDUT_Utility_Function.cs" />
+    <Compile Include="Utility\IO_TextFile.cs" />
+    <Compile Include="MyCal\MyCalVST.cs" />
+    <Compile Include="MyCal\MyCalVST_Variable.cs" />
+    <Compile Include="MyDUT.cs" />
+    <Compile Include="MyDUT_Variable.cs" />
+    <Compile Include="Utility\MyUtility.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test\ResultBuilder.cs" />
+    <Compile Include="Utility\ThreadWithDelegate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AvagoGuCalVrfy\AvagoGU.csproj">
+      <Project>{2d831cbc-e343-46d5-9e84-0997ad932d0f}</Project>
+      <Name>AvagoGU</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClothoSharedItems\ClothoSharedItems.csproj">
+      <Project>{c403325f-f34d-4993-b1e5-2efca24b24d3}</Project>
+      <Name>ClothoSharedItems</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LibEqmtDriver\LibEqmtDriver.csproj">
+      <Project>{9c58f571-2273-496a-8a86-52f062211206}</Project>
+      <Name>LibEqmtDriver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StopWatchManager\StopWatchManager.csproj">
+      <Project>{884d3bd0-9f3e-49c1-89a6-132359a07e13}</Project>
+      <Name>StopWatchManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TCPHandlerProtocol\TCPHandlerProtocol.csproj">
+      <Project>{971e9196-b710-4331-ad7f-1578090769e5}</Project>
+      <Name>TCPHandlerProtocol</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

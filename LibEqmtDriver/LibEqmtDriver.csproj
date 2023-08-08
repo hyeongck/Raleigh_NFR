@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9C58F571-2273-496A-8A86-52F062211206}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LibEqmtDriver</RootNamespace>
+    <AssemblyName>LibEqmtDriver</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Aemulus.Hardware.DM, Version=1.0.6016.24768, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\x64\Debug\Aemulus.Hardware.DM.dll</HintPath>
+    </Reference>
+    <Reference Include="Aemulus.Hardware.DM.DM280e, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\x64\Debug\Aemulus.Hardware.DM.DM280e.dll</HintPath>
+    </Reference>
+    <Reference Include="Aemulus.Hardware.DM.DM482e, Version=1.0.0.6, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\x64\Debug\Aemulus.Hardware.DM.DM482e.dll</HintPath>
+    </Reference>
+    <Reference Include="Aemulus.Hardware.ResourceManager, Version=2.0.0.53, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\x64\Debug\Aemulus.Hardware.ResourceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Aemulus.Hardware.SMU.PXI">
+      <HintPath>SMU\Aemulus.Hardware.SMU.PXI.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.niRFSA">
+      <HintPath>NF_VST\Interop.niRFSA.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Ivi.Driver, Version=1.4.0.0, Culture=neutral, PublicKeyToken=a128c98f1d7717c1, processorArchitecture=MSIL" />
+    <Reference Include="Ivi.Visa.Interop, Version=5.3.0.0, Culture=neutral, PublicKeyToken=a128c98f1d7717c1, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\IVI Foundation\VISA\VisaCom\Primary Interop Assemblies\Ivi.Visa.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="LabVIEWFiltersWrapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>NF_VST\LabVIEWFilters\LabVIEWFiltersWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="ModularZT64">
+      <HintPath>Switch\ModularZT64.dll</HintPath>
+    </Reference>
+    <Reference Include="NationalInstruments.Common, Version=19.0.40.49152, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.DAQmx, Version=14.5.45.122, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files (x86)\National Instruments\MeasurementStudioVS2012\DotNET\Assemblies\Current\NationalInstruments.DAQmx.dll</HintPath>
+    </Reference>
+    <Reference Include="NationalInstruments.LabVIEW.Interop, Version=1.5.0.0, Culture=neutral, PublicKeyToken=daeb5dc76be4e32a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\National Instruments\Shared\LabVIEW Run-Time\2014\NationalInstruments.LabVIEW.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="NationalInstruments.ModularInstruments.Common, Version=19.0.45.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.ModularInstruments.ModularInstrumentsSystem, Version=1.4.45.27, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.ModularInstruments.NIDigital.Fx45, Version=19.0.0.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.ModularInstruments.NIRfsa.Fx45, Version=19.1.5.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.ModularInstruments.NIRfsg.Fx45, Version=19.1.5.49152, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.NI4882, Version=13.0.45.161, Culture=neutral, PublicKeyToken=4febd62461bf11a4, processorArchitecture=MSIL" />
+    <Reference Include="NationalInstruments.RFmx.InstrMX.Fx40, Version=20.0.0.49152, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\NationalInstruments.RFmx.InstrMX.Fx40.dll</HintPath>
+    </Reference>
+    <Reference Include="NationalInstruments.RFmx.SpecAnMX.Fx40, Version=20.0.0.49152, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\NationalInstruments.RFmx.SpecAnMX.Fx40.dll</HintPath>
+    </Reference>
+    <Reference Include="NationalInstruments.SystemConfiguration, Version=20.0.40.49153, Culture=neutral, PublicKeyToken=1109e9caaa0bff6a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Avago.ATF.3.2.0\Data\PXI-NS_NFR-Banshee-VS2017\Lib\NationalInstruments.SystemConfiguration.dll</HintPath>
+    </Reference>
+    <Reference Include="NoiseFloorProcessingWrapper">
+      <HintPath>NF_VST\NoiseFloorProcessing\NoiseFloorProcessingWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DCSource\Base_DC.cs" />
+    <Compile Include="DCSource\Driver_DC.cs" />
+    <Compile Include="DCSource\N6700B.cs" />
+    <Compile Include="DCSource\PS662xA.cs" />
+    <Compile Include="DC_1CH\Base_DC_1CH.cs" />
+    <Compile Include="DC_1CH\Driver_DC_1CH.cs" />
+    <Compile Include="DC_1CH\E3633A.cs" />
+    <Compile Include="DC_1CH\N6700B_1CH.cs" />
+    <Compile Include="DC_1CH\NI4154.cs" />
+    <Compile Include="EqMultisite.cs" />
+    <Compile Include="MIPI\Base_MIPI.cs" />
+    <Compile Include="MIPI\DM280e_Rev1.cs" />
+    <Compile Include="MIPI\DM482e_Rev7.cs" />
+    <Compile Include="MIPI\DM482e_Vec_Rev4.cs" />
+    <Compile Include="MIPI\Driver_MIPI.cs" />
+    <Compile Include="MIPI\NI6570_Rev5.cs" />
+    <Compile Include="PowerSensor\Base_PowerSensor.cs" />
+    <Compile Include="SigAnalyzer\Base_SA.cs" />
+    <Compile Include="SigGen\Base_SG.cs" />
+    <Compile Include="SMU\Aemulus\Aemulus430e.cs" />
+    <Compile Include="SMU\Aemulus\Aemulus471e.cs" />
+    <Compile Include="SMU\Base_SMU.cs" />
+    <Compile Include="SMU\EqPPMU.cs" />
+    <Compile Include="NF_VST\NF-VSTDriver.cs" />
+    <Compile Include="NF_VST\NF_NI-RFmx.cs" />
+    <Compile Include="NF_VST\PowerRampingTest.cs" />
+    <Compile Include="NF_VST\RfsaWrapperDriver.cs" />
+    <Compile Include="NoiseSource\NoiseSource.cs" />
+    <Compile Include="PowerSensor\E4417A.cs" />
+    <Compile Include="PowerSensor\Driver_PowerSensor.cs" />
+    <Compile Include="PowerSensor\rsnrpz.cs" />
+    <Compile Include="PowerSensor\RSNRPZ11.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SigAnalyzer\Enum.cs" />
+    <Compile Include="SigAnalyzer\N9020A.cs" />
+    <Compile Include="SigAnalyzer\Driver_SA.cs" />
+    <Compile Include="SigGen\E8257D.cs" />
+    <Compile Include="SigGen\Enum.cs" />
+    <Compile Include="SigGen\N5182A.cs" />
+    <Compile Include="SigGen\Driver_SG.cs" />
+    <Compile Include="SMU\Aemulus\Aemulus1340.cs" />
+    <Compile Include="SMU\Aemulus\AePxiSMU.cs" />
+    <Compile Include="SMU\KeithleySMU.cs" />
+    <Compile Include="SMU\NationalInstrument\NI4139.cs" />
+    <Compile Include="SMU\NationalInstrument\NI4143.cs" />
+    <Compile Include="SMU\NationalInstrument\NI4154.cs" />
+    <Compile Include="SMU\NationalInstrument\niDCPower.cs" />
+    <Compile Include="SMU\NationalInstrument\niInteropCommon.cs" />
+    <Compile Include="SMU\NationalInstrument\NiPXISMU.cs" />
+    <Compile Include="SMU\Drive_SMU.cs" />
+    <Compile Include="Switch\AemulusWofer.cs" />
+    <Compile Include="Switch\Agilent3499.cs" />
+    <Compile Include="Switch\Base_Switch.cs" />
+    <Compile Include="Switch\FrmSwitchCount.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Switch\FrmSwitchCount.Designer.cs">
+      <DependentUpon>FrmSwitchCount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Switch\NI6509.cs" />
+    <Compile Include="Switch\Driver_Switch.cs" />
+    <Compile Include="Switch\SwitchStatusFile.cs" />
+    <Compile Include="Switch\ZTM.cs" />
+    <Compile Include="TuneableFilter\Base_TuneFilter.cs" />
+    <Compile Include="TuneableFilter\cKnL_D5BT.cs" />
+    <Compile Include="TuneableFilter\Driver_TuneFilter.cs" />
+    <Compile Include="Utility\HiPerfTimer.cs" />
+    <Compile Include="NF_VST\NF_NI-VST.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Switch\FrmSwitchCount.resx">
+      <DependentUpon>FrmSwitchCount.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClothoLibAlgo\ClothoLibAlgo.csproj">
+      <Project>{220a6f97-0a99-4db8-aae6-b41b681723e5}</Project>
+      <Name>ClothoLibAlgo</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClothoSharedItems\ClothoSharedItems.csproj">
+      <Project>{c403325f-f34d-4993-b1e5-2efca24b24d3}</Project>
+      <Name>ClothoSharedItems</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

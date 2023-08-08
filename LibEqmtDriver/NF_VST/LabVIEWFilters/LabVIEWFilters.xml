@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>LabVIEWFilters</name>
+  </assembly>
+  <members>
+    <member name="M:LabVIEWFilters.Filters.ParallelComplexFilter(System.Double,System.Double,System.Int32,System.Double[*],System.Double,System.Double[*],System.Double[*],System.Boolean)">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:LabVIEWFilters.Filters.LoadInterop">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:LabVIEWFilters.Filters.GetFilteredData1D(System.Int32,System.Double[*]@)">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:LabVIEWFilters.Filters.MutateWaveformFromFile(System.String,System.String,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double[*]@,System.Double[*]@)">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:LabVIEWFilters.Filters.CreateBenchmarkFiles(System.Int32,System.String@,System.String@)">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:LabVIEWFilters.Filters.MutateWaveformWithValidation(System.Double[*],System.Double[*],System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double[*]@,System.Double[*]@)">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:LabVIEWFilters.Filters.MutateWaveform(System.Double[*],System.Double[*],System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double[*]@,System.Double[*]@)">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:LabVIEWFilters.Filters.MutateWaveformFromFileWithValidation(System.String,System.String,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double,System.Double[*]@,System.Double[*]@)">
+      <summary></summary>
+      <returns>Void</returns>
+    </member>
+    <member name="M:LabVIEWFilters.Filters.PAPR(System.Double[*],System.Double[*],System.Double@)">
+      <summary>Calulcates the peak to average power ratio in dB.</summary>
+      <returns>Void</returns>
+    </member>
+  </members>
+</doc>
