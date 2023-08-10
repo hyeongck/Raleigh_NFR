@@ -46,8 +46,8 @@ namespace MyProduct
         public static long M_OTP_MODULE_ID_2DID { get; set; }
         public static long M_OTP_MODULE_ID_2DID_SYSTEM { get; set; }
         public static long M_Previous_OTP_MODULE_ID_2DID { get; set; }
-        public static long M_OTP_CheckAll { get; set; }
-        public static long M_Previous_OTP_CheckAll { get; set; }
+        public static string M_OTP_CheckAll { get; set; }
+        public static string M_Previous_OTP_CheckAll { get; set; }
         //correlation factor 
         public static List<string> corrFileTestNameList = new List<string>();  // Test names found in correlation file.
         public static Dictionary<string, double> GuCalFactorsDict = new Dictionary<string, double>();
@@ -587,7 +587,7 @@ namespace MyProduct
             if (paraName.Contains("M_OTP_STATUS_CMOS-WAFER-X") || paraName.Contains("M_OTP_STATUS_CMOS-WAFER-Y") || paraName.Contains("M_OTP_STATUS_CMOS-WAFER-LOT") || paraName.Contains("M_OTP_STATUS_CMOS-WAFER-ID")
                 || paraName.Contains("M_OTP_STATUS_LNA-WAFER-X") || paraName.Contains("M_OTP_STATUS_LNA-WAFER-Y") || paraName.Contains("M_OTP_STATUS_LNA-WAFER-LOT") || paraName.Contains("M_OTP_STATUS_LNA-WAFER-ID"))
             {
-                M_OTP_CheckAll = M_OTP_CheckAll + Convert.ToInt64(value);
+                M_OTP_CheckAll = M_OTP_CheckAll + Convert.ToString(value);
             }
 
             ATFResultBuilder.AddResult(ref results, paraName, unit, value);

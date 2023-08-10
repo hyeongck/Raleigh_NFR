@@ -613,7 +613,7 @@ namespace TestPlan_BansheeFull
             {
                 ResultBuilder.M_Previous_OTP_MODULE_ID_2DID = -1;  //DH DuplicateID
                 ResultBuilder.M_OTP_MODULE_ID_MIPI = -1;
-                ResultBuilder.M_Previous_OTP_CheckAll = -1;
+                ResultBuilder.M_Previous_OTP_CheckAll = "";
                 
                 //string[] ResultFileName = ATFCrossDomainWrapper.GetClothoCurrentResultFileFullPath().Split('_');
 
@@ -628,7 +628,7 @@ namespace TestPlan_BansheeFull
                 //    }
                 //}
             }
-            ResultBuilder.M_OTP_CheckAll = 0;
+            ResultBuilder.M_OTP_CheckAll = "";
 
             Regex regSublot1st = new Regex(@"^1[A-Z]$");
             Regex regSublot2nd = new Regex(@"^2[A-Z]$");
@@ -896,7 +896,7 @@ namespace TestPlan_BansheeFull
         public bool ChkDuplicatedDUT()
         {
             #region Duplicate Module ID
-            if (PauseOnDuplicateID && !AvagoGU.GU.runningGU)
+            if (PauseOnDuplicateID)
             {
                 //if (FirstTest ||
                 //    ((ResultBuilder.M_Previous_OTP_MODULE_ID != ResultBuilder.M_OTP_MODULE_ID)

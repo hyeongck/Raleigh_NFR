@@ -19,8 +19,8 @@
 #region Test Plan Properties Section (NO MANUAL TOUCH)
 ////<TestPlanVersion>TestPlanVersion=1<TestPlanVersion/>
 ////<ExcelBuddyConfig>BuddyExcel = AFEM-8233-AP1-NS_BE-PXI-NI_DVT_TCF_Rev0002.xlsx;ExcelDisplay = 1<ExcelBuddyConfig/>
-////<TestLimitBuddyConfig>BuddyTestLimit = AFEM-8233-AP1-NS_BE-PXI-NI_DVT_TSF_Rev0001.csv<TestLimitBuddyConfig/>
-////<CorrelationBuddyConfig>BuddyCorrelaton = AFEM-8233-AP1-NS_BE-PXI-NI_DVT_CF_Rev0001.csv<CorrelationBuddyConfig/>
+////<xTestLimitBuddyConfig>BuddyTestLimit = ENGR-8233-AP1-NS_BE-PXI-NI_Proto2B_TSF_Rev0001.csv<TestLimitBuddyConfig/>
+////<xCorrelationBuddyConfig>BuddyCorrelaton = ENGR-8233-AP1-NS_BE-PXI-NI_Proto2B_CF_Rev0001_new.csv<CorrelationBuddyConfig/>
 #endregion Test Plan Properties Section
 
 
