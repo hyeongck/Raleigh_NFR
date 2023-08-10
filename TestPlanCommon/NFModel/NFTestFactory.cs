@@ -92,12 +92,14 @@ namespace TestPlanCommon.NFModel
             try
 
             {
+                Stopwatch tTime = new Stopwatch();
+
+                tTime.Reset();
+                tTime.Start();
+
                 foreach (Dictionary<string, string> Data in DicTestNF)
                 {
-                    Stopwatch tTime = new Stopwatch();
-
-                    tTime.Reset();
-                    tTime.Start();
+                 
 
                     string testMode = Data["TEST MODE"].ToUpper();
                     string ge_HeaderStr = "";
@@ -1821,6 +1823,8 @@ namespace TestPlanCommon.NFModel
 
 
                 }
+
+                double testtime = tTime.ElapsedMilliseconds;
             }
             catch (Exception e)
             {

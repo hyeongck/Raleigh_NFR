@@ -589,18 +589,6 @@ namespace MyProduct
                 string testMode = myUtility.ReadTcfData(currTestCond, TCF_Header.ConstTestMode);
                 StopWatchManager.Instance.StartTest(tn, testMode);
 
-                //MXATrace[TestCount].Multi_Trace = new s_TraceNo[1][];
-                //MXATrace[TestCount].Multi_Trace[0] = new s_TraceNo[2]; //initialize to 2 for 2x MXA trace only
-
-                //PXITrace[TestCount].Multi_Trace = new s_TraceNo[10][];  //maximum of 10 RBW trace can be stored
-                //PXITraceRaw[TestCount].Multi_Trace = new s_TraceNo[10][];  //maximum of 10 RBW trace can be stored
-
-                //for (int i = 0; i < PXITrace[TestCount].Multi_Trace.Length; i++)
-                //{
-                //    PXITrace[TestCount].Multi_Trace[i] = new s_TraceNo[15]; //initialize to 15 for 15x PXI trace loop only
-                //    PXITraceRaw[TestCount].Multi_Trace[i] = new s_TraceNo[15]; //initialize to 15 for 15x PXI trace loop only
-                //}
-
                 if (StopOnFail.Enable != true)      //reset stop on fail flag if enable flag is false
                 {
                     StopOnFail.TestFail = false;
@@ -609,7 +597,6 @@ namespace MyProduct
 
                 try
                 {
-
 
                     if (currTestCond["TEST PARAMETER"] != "NF_MAX_MIN" && currTestCond["TEST PARAMETER"] != "NFG_TRACE_COLD" && currTestCond["TEST PARAMETER"] != "MULTI_DCSUPPLY")
                     {
@@ -6469,7 +6456,10 @@ namespace MyProduct
                                 #endregion
                                 double aa3 = tTime.ElapsedMilliseconds;
                             }
+                            else
+                            {
 
+                            }
                             switch (_Search_Method.ToUpper())
                             {
                                 case "UNITID":
