@@ -764,6 +764,7 @@ namespace MyProduct
             Eq.Site[0]._EqSwitch.SaveLocalMechSwStatusFile();
 
             int H_Count = 0;
+            bool SpecCheck = true;
 
             foreach (var key in LResults.Keys)
             {
@@ -776,9 +777,28 @@ namespace MyProduct
                 }
                 else
                 {
-                    ATFResultBuilder.AddResult(ref results, key, LResults[key].Unit, LResults[key].Value);
+                    ResultBuilder.BuildResults(ref results, key, LResults[key].Unit, LResults[key].Value);
                 }
+
+           
                 H_Count++;
+
+            }
+
+            foreach (Dictionary<string, string> currTestCond in DicTestPA)
+            {
+                string tmpTestNo = myUtility.ReadTcfData(currTestCond, TCF_Header.ConstTestNum);
+
+                Cs = AllNFtest[tmpTestNo];
+
+                if (Cs.DataCheckFirst)
+                {
+                    Cs.DataCheckFirst = false;
+
+                    ExecuteTest_Verify(currTestCond, ref results);
+
+                    Cs.DataCheckFirst = true;
+                }
 
             }
 
@@ -1236,9 +1256,7 @@ namespace MyProduct
 
             //    Task.WaitAll(taskFactories.ToArray());
 
-
-
-            TestTimePA = Speedo.Elapsed.TotalMilliseconds;
+                TestTimePA = Speedo.Elapsed.TotalMilliseconds;
 
             #region Close RFmx Session after NF Calibration for save cal file -Seoul
             for (int i = 0; i < DicTestPA.Count(); i++)
@@ -1304,7 +1322,7 @@ namespace MyProduct
 
             foreach (var key in LResults.Keys)
             {
-                if (H_Count == 0 || H_Count == 1)
+                if (H_Count < 3)
                 {
                     results.Data.Insert(H_Count + 13, new ATFReturnPararResult(key, LResults[key].Unit));
                     List<double> Data = new List<double> { Convert.ToDouble(LResults[key].Value) };
@@ -1313,8 +1331,10 @@ namespace MyProduct
                 }
                 else
                 {
-                    ATFResultBuilder.AddResult(ref results, key, LResults[key].Unit, LResults[key].Value);
+                    ResultBuilder.BuildResults(ref results, key, LResults[key].Unit, LResults[key].Value);
                 }
+
+
                 H_Count++;
 
             }
@@ -7124,234 +7144,88 @@ namespace MyProduct
 
                         #region BURN OTP REGISTER with customize bit selection
                         case "BURN_OTP_SELECTIVE_BIT":
-                            //R_MIPI FLAG STATUS - REMARK
-                            //R_MIPI = -1 > Register Not Blank , did not proceed to burn
-                            //R_MIPI = 0 > Register Blank , proceed to burn , Read not same as write data
-                            //R_MIPI = 1 > Register Blank , proceed to burn , Read same as write data
 
-                            #region Set SMU
-                            //pass to global variable to be use outside this function
-                            EqmtStatus.SMU_CH = _SMUSetCh;
-                            //to select which channel to set and measure - Format in TCF(DCSet_Channel) 1,4 -> means CH1 & CH4 to set/measure
-                            SetSMU = _SMUSetCh.Split(',');
-
-                            SetSMUSelect = new string[SetSMU.Count()];
-                            for (int i = 0; i < SetSMU.Count(); i++)
+                            if (!Cs.DataCheckFirst)
                             {
-                                int smuVChannel = Convert.ToInt16(SetSMU[i]);
-                                SetSMUSelect[i] = Eq.Site[0]._SMUSetting[smuVChannel];       //rearrange the Eq.Site[0]._SMUSetting base on reqquired channel only from total of 8 channel available  
-                                Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[smuVChannel], Eq.Site[0]._EqSMU, _SMUVCh[smuVChannel], _SMUILimitCh[smuVChannel]);
 
-                                //Store the SMU Channel Label - to be reuse later during OTP Burn process
-                                string tempLabel = "SMUI_CH" + SetSMU[i];
-                                foreach (string key in DicTestLabel.Keys)
+
+                                //R_MIPI FLAG STATUS - REMARK
+                                //R_MIPI = -1 > Register Not Blank , did not proceed to burn
+                                //R_MIPI = 0 > Register Blank , proceed to burn , Read not same as write data
+                                //R_MIPI = 1 > Register Blank , proceed to burn , Read same as write data
+
+                                #region Set SMU
+                                //pass to global variable to be use outside this function
+                                EqmtStatus.SMU_CH = _SMUSetCh;
+                                //to select which channel to set and measure - Format in TCF(DCSet_Channel) 1,4 -> means CH1 & CH4 to set/measure
+                                SetSMU = _SMUSetCh.Split(',');
+
+                                SetSMUSelect = new string[SetSMU.Count()];
+                                for (int i = 0; i < SetSMU.Count(); i++)
                                 {
-                                    if (key == tempLabel)
+                                    int smuVChannel = Convert.ToInt16(SetSMU[i]);
+                                    SetSMUSelect[i] = Eq.Site[0]._SMUSetting[smuVChannel];       //rearrange the Eq.Site[0]._SMUSetting base on reqquired channel only from total of 8 channel available  
+                                    Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[smuVChannel], Eq.Site[0]._EqSMU, _SMUVCh[smuVChannel], _SMUILimitCh[smuVChannel]);
+
+                                    //Store the SMU Channel Label - to be reuse later during OTP Burn process
+                                    string tempLabel = "SMUI_CH" + SetSMU[i];
+                                    foreach (string key in DicTestLabel.Keys)
                                     {
-                                        R_SMULabel_ICh[smuVChannel] = DicTestLabel[key].ToString().ToUpper();
-                                        break;
+                                        if (key == tempLabel)
+                                        {
+                                            R_SMULabel_ICh[smuVChannel] = DicTestLabel[key].ToString().ToUpper();
+                                            break;
+                                        }
                                     }
                                 }
-                            }
 
-                            Eq.Site[0]._Eq_SMUDriver.DcOn(SetSMUSelect, Eq.Site[0]._EqSMU);
-                            #endregion
+                                Eq.Site[0]._Eq_SMUDriver.DcOn(SetSMUSelect, Eq.Site[0]._EqSMU);
+                                #endregion
 
-                            #region Initialize variable to default
-                            //Initialize to default
-                            b_lockBit = true;
-                            i_lockBit = -999;
-                            i_testFlag = -999;
-                            b_testFlag = true;
-                            BurnOTP = false;
-                            dataDec_Conv = -999;
-                            dataSizeHex = null;
+                                #region Initialize variable to default
+                                //Initialize to default
+                                b_lockBit = true;
+                                i_lockBit = -999;
+                                i_testFlag = -999;
+                                b_testFlag = true;
+                                BurnOTP = false;
+                                dataDec_Conv = -999;
+                                dataSizeHex = null;
 
-                            R_ReadMipiReg = -999;   //set to fail value (default)
-                            R_MIPI = -999;          //set to fail value (default)
-                            tmpOutData_DecConv = -999;
+                                R_ReadMipiReg = -999;   //set to fail value (default)
+                                R_MIPI = -999;          //set to fail value (default)
+                                tmpOutData_DecConv = -999;
 
-                            biasDataArr = null;
-                            dataHex = null;
-                            int sumVal = -1; //Default to 0
-                            #endregion
+                                biasDataArr = null;
+                                dataHex = null;
+                                int sumVal = -1; //Default to 0
+                                #endregion
 
-                            #region Read Register and return Data - derive from Mipi custom spreadsheet
-                            //Search and return Data from Mipi custom spreadsheet 
-                            searchMIPIKey(_TestParam, _SwBand, out CusMipiRegMap, out CusPMTrigMap, out CusSlaveAddr, out CusMipiPair, out CusMipiSite, out b_mipiTKey);
+                                #region Read Register and return Data - derive from Mipi custom spreadsheet
+                                //Search and return Data from Mipi custom spreadsheet 
+                                searchMIPIKey(_TestParam, _SwBand, out CusMipiRegMap, out CusPMTrigMap, out CusSlaveAddr, out CusMipiPair, out CusMipiSite, out b_mipiTKey);
 
-                            biasDataArr = CusMipiRegMap.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);     //split string with blank space as delimiter
-                            dataHex = new string[biasDataArr.Length];
+                                biasDataArr = CusMipiRegMap.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);     //split string with blank space as delimiter
+                                dataHex = new string[biasDataArr.Length];
 
-                            if (dataHex.Length < 6)
-                            {
-                                readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out tmpOutData_DecConv, out dataSizeHex);
-                            }
-                            #endregion
+                                if (dataHex.Length < 6)
+                                {
+                                    readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out tmpOutData_DecConv, out dataSizeHex);
+                                }
+                                #endregion
 
-                            switch (_Search_Method.ToUpper())
-                            {
-                                case "MFG_ID":
-                                case "MFGID":
-                                    #region Burn Manufacturing ID
-                                    dataDec_Conv = Convert.ToInt32(mfgLotID);         //convert string to int
-                                    if (dataDec_Conv < (Convert.ToInt32(dataSizeHex, 16)))
-                                    {
-                                        //MSB - dataHex[0] , LSB - dataHex[1]
-                                        Sort_MSBnLSB(dataDec_Conv, out dataHex[0], out dataHex[1]);
-                                        BurnOTP = true;         //set flag to true for burning otp
-                                    }
-
-                                    //read lock bit register and compare Lockbit register
-                                    readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
-
-                                    if ((i_lockBit != 0) || (tmpOutData_DecConv != 0))    // '0' not program , '1' have program
-                                    {
-                                        R_MIPI = -1;
-                                        R_ReadMipiReg = tmpOutData_DecConv;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        //burn OTP register
-                                        if ((BurnOTP) && (i_lockBit == 0) && (tmpOutData_DecConv == 0))
+                                switch (_Search_Method.ToUpper())
+                                {
+                                    case "MFG_ID":
+                                    case "MFGID":
+                                        #region Burn Manufacturing ID
+                                        dataDec_Conv = Convert.ToInt32(mfgLotID);         //convert string to int
+                                        if (dataDec_Conv < (Convert.ToInt32(dataSizeHex, 16)))
                                         {
-                                            //Set VBATT only to prepare for otp burn procedure
-                                            for (int i = 0; i < SetSMU.Count(); i++)
-                                            {
-                                                bool found = R_SMULabel_ICh[i].Substring(0, R_SMULabel_ICh[i].Length).Contains("BAT");
-                                                if (found)
-                                                {
-                                                    Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[i], Eq.Site[0]._EqSMU, (float)5.5, (float)0.1);
-                                                }
-                                            }
-
-                                            //burn_OTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
-                                            burn_AceOTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
-
-                                            #region Read Back MIPI register
-
-                                            #region Turn off SMU and VIO - to prepare for read back mipi register
-                                            if (EqmtStatus.SMU)
-                                            {
-                                                Eq.Site[0]._Eq_SMUDriver.DcOff(Eq.Site[0]._SMUSetting, Eq.Site[0]._EqSMU);
-                                            }
-
-                                            Eq.Site[0]._EqMiPiCtrl.TurnOff_VIO(Convert.ToInt16(CusMipiPair));        //mipi pair - derive from MIPI spereadsheet
-                                            DelayMs(_RdCurr_Delay);
-                                            #endregion
-
-                                            //read back register and compare with program data
-                                            readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out R_ReadMipiReg, out dummyStrData);
-
-                                            if (R_ReadMipiReg == Convert.ToInt32(mfgLotID))
-                                            {
-                                                R_MIPI = 1;
-                                            }
-                                            else
-                                            {
-                                                R_MIPI = 2;
-                                            }
-
-                                            #endregion
+                                            //MSB - dataHex[0] , LSB - dataHex[1]
+                                            Sort_MSBnLSB(dataDec_Conv, out dataHex[0], out dataHex[1]);
+                                            BurnOTP = true;         //set flag to true for burning otp
                                         }
-                                    }
-                                    #endregion
-                                    break;
-
-                                case "UNIT_ID":
-                                case "UNITID":
-                                    #region Burn Module ID
-                                    //Set the DUT SN ID and Check if file exist , if not exist -> create and write default SN
-                                    dataDec_Conv = GetNextModuleID(Convert.ToInt32(dataSizeHex, 16), out b_testFlag);
-
-                                    if ((dataDec_Conv <= (Convert.ToInt32(dataSizeHex, 16))) && (b_testFlag))
-                                    {
-                                        //MSB - dataHex[0] , LSB - dataHex[1]
-                                        Sort_MSBnLSB(dataDec_Conv, out dataHex[0], out dataHex[1]);
-                                        BurnOTP = true;         //set flag to true for burning otp
-                                    }
-
-                                    //compare Lockbit register
-                                    readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
-
-                                    if ((i_lockBit != 0) || (tmpOutData_DecConv != 0))    // '0' not program , '1' have program
-                                    {
-                                        R_MIPI = -1;
-                                        R_ReadMipiReg = tmpOutData_DecConv;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        //burn OTP register
-                                        if ((BurnOTP) && (i_lockBit == 0) && (tmpOutData_DecConv == 0))
-                                        {
-                                            //Set VBATT only to prepare for otp burn procedure
-                                            for (int i = 0; i < SetSMU.Count(); i++)
-                                            {
-                                                bool found = R_SMULabel_ICh[i].Substring(0, R_SMULabel_ICh[i].Length).Contains("BAT");
-                                                if (found)
-                                                {
-                                                    Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[i], Eq.Site[0]._EqSMU, (float)5.5, (float)0.1);
-                                                }
-                                            }
-
-                                            //burn_OTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
-                                            burn_AceOTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
-
-                                            #region Read Back MIPI register
-
-                                            #region Turn off SMU and VIO - to prepare for read back mipi register
-                                            if (EqmtStatus.SMU)
-                                            {
-                                                Eq.Site[0]._Eq_SMUDriver.DcOff(Eq.Site[0]._SMUSetting, Eq.Site[0]._EqSMU);
-                                            }
-
-                                            Eq.Site[0]._EqMiPiCtrl.TurnOff_VIO(Convert.ToInt16(CusMipiPair));        //mipi pair - derive from MIPI spereadsheet
-                                            DelayMs(_RdCurr_Delay);
-
-                                            #endregion
-
-                                            //read back register and compare with program data
-                                            readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out R_ReadMipiReg, out dummyStrData);
-
-                                            if (R_ReadMipiReg == dataDec_Conv)
-                                            {
-                                                R_MIPI = 1;
-                                            }
-                                            else
-                                            {
-                                                R_MIPI = 2;
-                                            }
-
-                                            #endregion
-                                        }
-                                    }
-                                    #endregion
-                                    break;
-
-                                case "TEST_FLAG":
-                                case "TESTFLAG":
-                                    #region Burn Test Flag
-                                    if (ResultBuilder.FailedTests[0].Count != 0)
-                                    {
-
-                                        //if (ResultBuilder.FailedTests[0].Count < 300)
-                                        //{
-                                        //    for (int i = 0; i < ResultBuilder.FailedTests[0].Count; i++)
-                                        //    {
-                                        //        ATFLogControl.Instance.Log(LogLevel.Error, LogSource.eHandler, ResultBuilder.FailedTests[0][i].ToString());
-                                        //    }
-                                        //}
-                                        BurnOTP = false;
-                                        R_MIPI = -1;
-                                        R_ReadMipiReg = -999;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        //if all pass spec
-                                        BurnOTP = true;
 
                                         //read lock bit register and compare Lockbit register
                                         readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
@@ -7377,22 +7251,11 @@ namespace MyProduct
                                                     }
                                                 }
 
-                                                //Get the program value from Mipi custom spreadsheet 
-                                                //example : E3:80 -> E3:1000 0000 (in Binary) - will program bit7 
-                                                //regMapValue[0] = E3 , regMapValue[1] = 80
-                                                //dataHex will be stored with 80
-                                                //split string with blank space as delimiter
-                                                biasDataArr = CusMipiRegMap.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);     //split string with blank space as delimiter
-                                                for (int i = 0; i < biasDataArr.Length; i++)
-                                                {
-                                                    string[] regMapValue = biasDataArr[i].Split(':');
-                                                    dataHex[i] = regMapValue[1];
-                                                }
-
                                                 //burn_OTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
                                                 burn_AceOTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
 
                                                 #region Read Back MIPI register
+
                                                 #region Turn off SMU and VIO - to prepare for read back mipi register
                                                 if (EqmtStatus.SMU)
                                                 {
@@ -7404,8 +7267,79 @@ namespace MyProduct
                                                 #endregion
 
                                                 //read back register and compare with program data
-                                                mask_viaEffectiveBit(dataHex, _SwBand, CusMipiRegMap, out dataDec_Conv);
                                                 readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out R_ReadMipiReg, out dummyStrData);
+
+                                                if (R_ReadMipiReg == Convert.ToInt32(mfgLotID))
+                                                {
+                                                    R_MIPI = 1;
+                                                }
+                                                else
+                                                {
+                                                    R_MIPI = 2;
+                                                }
+
+                                                #endregion
+                                            }
+                                        }
+                                        #endregion
+                                        break;
+
+                                    case "UNIT_ID":
+                                    case "UNITID":
+                                        #region Burn Module ID
+                                        //Set the DUT SN ID and Check if file exist , if not exist -> create and write default SN
+                                        dataDec_Conv = GetNextModuleID(Convert.ToInt32(dataSizeHex, 16), out b_testFlag);
+
+                                        if ((dataDec_Conv <= (Convert.ToInt32(dataSizeHex, 16))) && (b_testFlag))
+                                        {
+                                            //MSB - dataHex[0] , LSB - dataHex[1]
+                                            Sort_MSBnLSB(dataDec_Conv, out dataHex[0], out dataHex[1]);
+                                            BurnOTP = true;         //set flag to true for burning otp
+                                        }
+
+                                        //compare Lockbit register
+                                        readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
+
+                                        if ((i_lockBit != 0) || (tmpOutData_DecConv != 0))    // '0' not program , '1' have program
+                                        {
+                                            R_MIPI = -1;
+                                            R_ReadMipiReg = tmpOutData_DecConv;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            //burn OTP register
+                                            if ((BurnOTP) && (i_lockBit == 0) && (tmpOutData_DecConv == 0))
+                                            {
+                                                //Set VBATT only to prepare for otp burn procedure
+                                                for (int i = 0; i < SetSMU.Count(); i++)
+                                                {
+                                                    bool found = R_SMULabel_ICh[i].Substring(0, R_SMULabel_ICh[i].Length).Contains("BAT");
+                                                    if (found)
+                                                    {
+                                                        Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[i], Eq.Site[0]._EqSMU, (float)5.5, (float)0.1);
+                                                    }
+                                                }
+
+                                                //burn_OTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
+                                                burn_AceOTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
+
+                                                #region Read Back MIPI register
+
+                                                #region Turn off SMU and VIO - to prepare for read back mipi register
+                                                if (EqmtStatus.SMU)
+                                                {
+                                                    Eq.Site[0]._Eq_SMUDriver.DcOff(Eq.Site[0]._SMUSetting, Eq.Site[0]._EqSMU);
+                                                }
+
+                                                Eq.Site[0]._EqMiPiCtrl.TurnOff_VIO(Convert.ToInt16(CusMipiPair));        //mipi pair - derive from MIPI spereadsheet
+                                                DelayMs(_RdCurr_Delay);
+
+                                                #endregion
+
+                                                //read back register and compare with program data
+                                                readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out R_ReadMipiReg, out dummyStrData);
+
                                                 if (R_ReadMipiReg == dataDec_Conv)
                                                 {
                                                     R_MIPI = 1;
@@ -7418,41 +7352,37 @@ namespace MyProduct
                                                 #endregion
                                             }
                                         }
-                                    }
+                                        #endregion
+                                        break;
 
-                                    #endregion
-                                    break;
-                                case "RF1-OUTLIER-FLAG":
-                                    // Ivan - Dpat
-                                    #region Burn RF1 OUTLIER Test Flag
-                                    //int sumVal = -1; //Default to 0
-                                    if (DpatEnable)
-                                    {
-                                        //Avago.ATF.Outlier.LotOutlierRecord.Instance.CheckDUTOutlier(ResultBuilder.M_MFG_ID, ResultBuilder.M_OTP_MODULE_ID_2DID, out sumVal);
-                                        try
+                                    case "TEST_FLAG":
+                                    case "TESTFLAG":
+
+                                        #region Burn Test Flag
+                                        if (ResultBuilder.FailedTests[0].Count != 0)
                                         {
-                                            Avago.ATF.Outlier.LotOutlierRecord.Instance.CheckDUTOutlier(ResultBuilder.M_MFG_ID, ResultBuilder.M_OTP_MODULE_ID_2DID_SYSTEM, out sumVal);
-                                        }
-                                        catch
-                                        {
-                                            sumVal = -999999;
-                                        }
-                                        //MessageBox.Show(sumVal.ToString());
-                                        if (sumVal <= 0)
-                                        {
+
+                                            //if (ResultBuilder.FailedTests[0].Count < 300)
+                                            //{
+                                            //    for (int i = 0; i < ResultBuilder.FailedTests[0].Count; i++)
+                                            //    {
+                                            //        ATFLogControl.Instance.Log(LogLevel.Error, LogSource.eHandler, ResultBuilder.FailedTests[0][i].ToString());
+                                            //    }
+                                            //}
                                             BurnOTP = false;
                                             R_MIPI = -1;
-                                            R_ReadMipiReg = tmpOutData_DecConv;
+                                            R_ReadMipiReg = -999;
                                             break;
                                         }
                                         else
                                         {
+                                            //if all pass spec
                                             BurnOTP = true;
 
                                             //read lock bit register and compare Lockbit register
                                             readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
 
-                                            if (tmpOutData_DecConv != 0)    // '0' not program , '1' have program
+                                            if ((i_lockBit != 0) || (tmpOutData_DecConv != 0))    // '0' not program , '1' have program
                                             {
                                                 R_MIPI = -1;
                                                 R_ReadMipiReg = tmpOutData_DecConv;
@@ -7461,7 +7391,7 @@ namespace MyProduct
                                             else
                                             {
                                                 //burn OTP register
-                                                if ((BurnOTP) && (sumVal > 0))
+                                                if ((BurnOTP) && (i_lockBit == 0) && (tmpOutData_DecConv == 0))
                                                 {
                                                     //Set VBATT only to prepare for otp burn procedure
                                                     for (int i = 0; i < SetSMU.Count(); i++)
@@ -7508,524 +7438,620 @@ namespace MyProduct
                                                     }
                                                     else
                                                     {
-                                                        R_MIPI = -1;
+                                                        R_MIPI = 2;
                                                     }
 
                                                     #endregion
                                                 }
                                             }
                                         }
-                                    }
 
-                                    #endregion
-                                    break;
-
-
-
-                                case "CM_ID":
-                                case "CMID":
-                                    #region Burn CM ID
-                                    //Check CM base on Device ID scanning
-                                    string[] tmpDeviceID = new string[3];
-                                    try
-                                    {
-                                        tmpDeviceID = deviceID.Split('-');
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        throw new Exception("DEVICE ID FORMAT INCORRECT (ENGR-XXXX-Y) : " + deviceID + " -> " + ex.Message);
-                                    }
-
-                                    switch (tmpDeviceID[2].ToUpper())
-                                    {
-                                        case "M":
-                                            //Amkor Assembly
-                                            R_MIPI = 1;
-                                            R_ReadMipiReg = tmpOutData_DecConv;
-                                            BurnOTP = false;        //Amkor CM ID = 0 , thus not required to Burn
-                                            break;
-                                        case "A":
-                                            //AseKr Assembly
-                                            R_MIPI = 1;
-                                            BurnOTP = true;         //ASEKr CM ID = 1 , thus Otp Burn is required
-                                            break;
-                                        default:
-                                            MessageBox.Show("CM Site : " + tmpDeviceID[2].ToUpper() + " (CM SITE not supported at this moment)", "MyDUT", MessageBoxButtons.OK);
-                                            R_MIPI = -999;
-                                            BurnOTP = false;        //set flag to false for burning otp
-                                            break;
-                                    }
-
-                                    #region Check Lockbit and CM ID register and Burn Register
-                                    //read lock bit register and compare Lockbit register
-                                    readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
-
-                                    if ((i_lockBit != 0) || (tmpOutData_DecConv != 0))    // '0' not program , '1' have program
-                                    {
-                                        R_MIPI = -1;
-                                        R_ReadMipiReg = tmpOutData_DecConv;
+                                        #endregion
                                         break;
-                                    }
-                                    else
-                                    {
-                                        //burn OTP register
-                                        if ((BurnOTP) && (i_lockBit == 0) && (tmpOutData_DecConv == 0))
+                                    case "RF1-OUTLIER-FLAG":
+                                        // Ivan - Dpat
+                                        #region Burn RF1 OUTLIER Test Flag
+                                        //int sumVal = -1; //Default to 0
+                                        if (DpatEnable)
                                         {
-                                            //Set VBATT only to prepare for otp burn procedure
-                                            for (int i = 0; i < SetSMU.Count(); i++)
+                                            //Avago.ATF.Outlier.LotOutlierRecord.Instance.CheckDUTOutlier(ResultBuilder.M_MFG_ID, ResultBuilder.M_OTP_MODULE_ID_2DID, out sumVal);
+                                            try
                                             {
-                                                bool found = R_SMULabel_ICh[i].Substring(0, R_SMULabel_ICh[i].Length).Contains("BAT");
-                                                if (found)
-                                                {
-                                                    Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[i], Eq.Site[0]._EqSMU, (float)5.5, (float)0.1);
-                                                }
+                                                Avago.ATF.Outlier.LotOutlierRecord.Instance.CheckDUTOutlier(ResultBuilder.M_MFG_ID, ResultBuilder.M_OTP_MODULE_ID_2DID_SYSTEM, out sumVal);
                                             }
-
-                                            //Get the program value from Mipi custom spreadsheet 
-                                            //example : E3:80 -> E3:1000 0000 (in Binary) - will program bit7 
-                                            //regMapValue[0] = E3 , regMapValue[1] = 80
-                                            //dataHex will be stored with 80
-                                            //split string with blank space as delimiter
-                                            biasDataArr = CusMipiRegMap.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);     //split string with blank space as delimiter
-                                            for (int i = 0; i < biasDataArr.Length; i++)
+                                            catch
                                             {
-                                                string[] regMapValue = biasDataArr[i].Split(':');
-                                                dataHex[i] = regMapValue[1];
+                                                sumVal = -999999;
                                             }
-
-                                            burn_OTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
-                                            burn_AceOTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
-
-                                            #region Read Back MIPI register
-
-                                            #region Turn off SMU and VIO - to prepare for read back mipi register
-                                            if (EqmtStatus.SMU)
+                                            //MessageBox.Show(sumVal.ToString());
+                                            if (sumVal <= 0)
                                             {
-                                                Eq.Site[0]._Eq_SMUDriver.DcOff(Eq.Site[0]._SMUSetting, Eq.Site[0]._EqSMU);
-                                            }
-
-                                            Eq.Site[0]._EqMiPiCtrl.TurnOff_VIO(Convert.ToInt16(CusMipiPair));        //mipi pair - derive from MIPI spereadsheet
-                                            DelayMs(_RdCurr_Delay);
-                                            #endregion
-
-                                            //read back register and compare with program data
-                                            mask_viaEffectiveBit(dataHex, _SwBand, CusMipiRegMap, out dataDec_Conv);
-                                            readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out R_ReadMipiReg, out dummyStrData);
-
-                                            if ((R_ReadMipiReg == dataDec_Conv) && (BurnOTP))
-                                            {
-                                                //Good - Return Flag '1'
-                                                R_MIPI = 1;
-                                            }
-                                            else if ((R_ReadMipiReg == 1) && (!BurnOTP))
-                                            {
-                                                //Bad - Return Flag '-999'
-                                                R_MIPI = 2;
-                                            }
-
-                                            #endregion
-                                        }
-                                    }
-                                    #endregion
-
-                                    #endregion
-                                    break;
-
-                                case "UNIT_2DID":
-                                    #region Burn 2DID data
-
-                                    //note - Status Flag (R_MIPI) 
-                                    //2DID Readback failure - 3
-                                    //2DID info duplicate - 5
-                                    //Lockbit/2DID register not empty - 7
-                                    //2DID register readback not same as PartSN_2 - 9
-                                    //Pass ALL - 0                               
-
-                                    //2DID local variable
-                                    string str2DIDmark = null;
-                                    string strPartSN2 = null;
-
-                                    //Initialize variable
-                                    bool b_reg2DID = false;     //bool for read DUT register
-                                    bool b_str2DID = false;     //bool for read Handler 2DID
-                                    bool success = false;
-                                    char[] sort2DID;
-                                    int regCount = 0;
-
-                                    dataDec_Conv = 0;
-                                    BurnOTP = false;
-
-                                    //reset to default value
-                                    R_MIPI = -999;
-                                    R_ReadMipiReg_long = -999;
-                                    R_partSN2_2DID = -999;
-                                    R_partSN2_preReg = -999;
-                                    R_partSN2_postReg = -999;
-
-                                    string[] raw_OutdataHex;
-                                    string raw_OutdataDec = null;
-                                    string[] data2DID;
-
-                                    #region Read Register and return Data - derive from Mipi custom spreadsheet
-                                    //Search and return Data from Mipi custom spreadsheet 
-                                    searchMIPIKey(_TestParam, _SwBand, out CusMipiRegMap, out CusPMTrigMap, out CusSlaveAddr, out CusMipiPair, out CusMipiSite, out b_mipiTKey);
-
-                                    biasDataArr = CusMipiRegMap.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);     //split string with blank space as delimiter
-                                    dataHex = new string[biasDataArr.Length];
-                                    raw_OutdataHex = new string[biasDataArr.Length];
-                                    data2DID = new string[biasDataArr.Length];
-
-                                    readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out raw_OutdataHex, out dataSizeHex);
-
-                                    //check if blank register
-                                    appendDec = null;
-                                    b_reg2DID = true;   //set to default
-
-                                    for (int i = 0; i < raw_OutdataHex.Length; i++)
-                                    {
-                                        dataDec_Conv = int.Parse(raw_OutdataHex[i], System.Globalization.NumberStyles.HexNumber);
-
-                                        if (dataDec_Conv <= 99)       //Note 2DID register max value until dec 99 only
-                                        {
-                                            if (dataDec_Conv <= 9)
-                                            {
-                                                raw_OutdataDec = "0" + dataDec_Conv;
-                                            }
-                                            else
-                                            {
-                                                raw_OutdataDec = dataDec_Conv.ToString();
-                                            }
-                                        }
-                                        else
-                                        {
-                                            R_MIPI = 2; //register readback fail flag
-                                            b_reg2DID = false;
-                                        }
-
-                                        appendDec = appendDec + raw_OutdataDec;
-                                    }
-
-                                    success = long.TryParse(appendDec, out R_partSN2_preReg);  //check if return data from register must not exceed '99' for every register address
-                                    if (!success)
-                                    {
-                                        b_reg2DID = false;
-                                        R_MIPI = 2; //register readback fail flag
-                                        R_partSN2_preReg = 999999999999;
-                                    }
-                                    #endregion
-
-                                    if (EqmtStatus.handler)
-                                    {
-                                        #region 2DID Handler TCP
-                                        HandlerLotInfo hli = new HandlerLotInfo();
-                                        hli = TcpClient.LastTestedInTheLotQuery();
-                                        #endregion
-
-                                        #region decode 2DID
-                                        //default setting
-                                        //Total EFuse Register = 6
-                                        //Total data = 24 numerics , Effective numeric data from 13 to 24 , numeric data  1 to 12 not use
-                                        //Example str2DIDmark = "193713219999999999100500";
-
-                                        str2DIDmark = string.Format("{0:D24}", hli.strBarcodeID);
-
-                                        if (str2DIDmark != null && str2DIDmark.Length == 24)
-                                        {
-                                            //for double unit marking detection
-                                            if (str2DIDmark != Previous2DIDmark)
-                                            {
-                                                sort2DID = new char[str2DIDmark.Length];
-                                                Previous2DIDmark = str2DIDmark;
-                                            }
-                                            else
-                                            {
-                                                //flag for double unit marking
-                                                str2DIDmark = "-1";
-                                                R_partSN2_2DID = -1;
-                                                R_MIPI = 5; //double unit fail flag
-                                            }
-                                        }
-                                        else
-                                        {
-                                            //if cannot read from handler
-                                            str2DIDmark = "-999";
-                                            R_partSN2_2DID = -99999;
-                                            R_MIPI = 3; //readback fail flag
-                                        }
-
-                                        if (str2DIDmark != "-999" && str2DIDmark != "0" && str2DIDmark != "-1")
-                                        {
-                                            b_str2DID = true;     //set to default                                            
-                                            count = 0;
-                                            sort2DID = str2DIDmark.ToCharArray();
-
-                                            for (int i = 12; i < str2DIDmark.Length; i++)
-                                            {
-                                                count++;
-                                                if (count == 2) //do checking for every 2 number
-                                                {
-                                                    if (regCount < dataHex.Length)
-                                                    {
-                                                        //take 2 numerical data to form 1x Hex Data
-                                                        //eg sort2DID[12] = '5' & eg sort2DID[13] = '0'
-                                                        //Then if the appended sort2DID[12] & sort2DID[13] is a valid number (note : max number is 99)
-                                                        string tmpDataDec = sort2DID[i - 1].ToString() + sort2DID[i].ToString();
-
-                                                        success = Int32.TryParse(tmpDataDec, out dataDec_Conv);       //check if 2DID marking data is valid -  ie valid number(can convert from Hex to Integer back and forth & must be less than '99') 
-
-                                                        if (!success)
-                                                        {
-                                                            MessageBox.Show("Test Parameter : " + _TestParam + " - String to Decimal Conversion Unsuccessful >> Input String With Wrong Format : " + tmpDataDec, "MyDUT", MessageBoxButtons.OK);
-                                                            dataDec_Conv = 0;       //set to default '0' if fail conversion
-                                                            b_str2DID = false;
-                                                            R_MIPI = 3; //handler 2DID readback fail flag
-                                                        }
-
-                                                        //store scan 2DID value for later comparison
-                                                        if (dataDec_Conv <= 9)
-                                                        {
-                                                            data2DID[regCount] = "0" + dataDec_Conv.ToString();
-                                                        }
-                                                        else
-                                                        {
-                                                            data2DID[regCount] = dataDec_Conv.ToString();
-                                                        }
-
-                                                        dataHex[regCount] = dataDec_Conv.ToString("X2");        //convert dec to hex and pass data for burn otp process
-                                                        count = 0;
-                                                        regCount++;
-                                                    }
-                                                }
-                                            }
-
-                                            //re-arrange only partSN2_2DID
-                                            for (int i = 0; i < data2DID.Length; i++)
-                                            {
-                                                strPartSN2 = strPartSN2 + data2DID[i];
-                                            }
-
-                                            R_partSN2_2DID = Convert.ToInt64(strPartSN2);
-                                        }
-                                        #endregion
-                                    }
-                                    else
-                                    {
-                                        //Handler not enable
-                                        b_str2DID = false;
-                                        R_MIPI = 3;
-                                        R_ReadMipiReg_long = -99999;
-                                        R_partSN2_2DID = -99999;
-                                        R_partSN2_postReg = -99999;
-                                    }
-
-                                    //change OTP Burn flag to true if Read DUT Register and Read Handler 2DID is success
-                                    if (b_str2DID && b_reg2DID)
-                                    {
-                                        BurnOTP = true;
-                                    }
-
-                                    if (BurnOTP)
-                                    {
-                                        #region Burn OTP
-                                        //read lock bit register and compare Lockbit register
-                                        readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
-
-                                        if ((i_lockBit != 0) || (R_partSN2_preReg != 0) || !BurnOTP)    // '0' not program , '1' have program
-                                        {
-                                            if (R_partSN2_preReg == R_partSN2_2DID)
-                                            {
-                                                R_MIPI = 0;     // 2DID Pre register match with 2DID PartSN2
-                                                R_partSN2_postReg = 0;       //make post register readout to 0 as per PE request
+                                                BurnOTP = false;
+                                                R_MIPI = -1;
+                                                R_ReadMipiReg = tmpOutData_DecConv;
                                                 break;
                                             }
                                             else
                                             {
-                                                R_MIPI = 7;     //lockbit/2DID register not empty flag  
-                                                R_partSN2_postReg = 0;       //make post register readout to 0 as per PE request
-                                                break;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            //burn OTP register
-                                            //Set VBATT only to prepare for otp burn procedure
-                                            for (int i = 0; i < SetSMU.Count(); i++)
-                                            {
-                                                bool found = R_SMULabel_ICh[i].Substring(0, R_SMULabel_ICh[i].Length).Contains("BAT");
-                                                if (found)
+                                                BurnOTP = true;
+
+                                                //read lock bit register and compare Lockbit register
+                                                readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
+
+                                                if (tmpOutData_DecConv != 0)    // '0' not program , '1' have program
                                                 {
-                                                    Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[i], Eq.Site[0]._EqSMU, (float)5.5, (float)0.1);
-                                                }
-                                            }
-
-                                            burn_AceOTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
-
-                                            #region Read Back MIPI register
-
-                                            #region Turn off SMU and VIO - to prepare for read back mipi register
-                                            if (EqmtStatus.SMU)
-                                            {
-                                                Eq.Site[0]._Eq_SMUDriver.DcOff(Eq.Site[0]._SMUSetting, Eq.Site[0]._EqSMU);
-                                            }
-                                            Eq.Site[0]._EqMiPiCtrl.TurnOff_VIO(Convert.ToInt16(CusMipiPair));        //mipi pair - derive from MIPI spereadsheet
-                                            DelayMs(_RdCurr_Delay);
-                                            #endregion
-
-                                            //read back register and compare with program data
-                                            b_reg2DID = true;       //set to default
-                                            appendDec = null;
-                                            raw_OutdataHex = new string[biasDataArr.Length];
-
-                                            readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out raw_OutdataHex, out dummyStrData);
-
-                                            for (int i = 0; i < raw_OutdataHex.Length; i++)
-                                            {
-                                                //check if 2DID reg data is valid - ie less or equal '99'
-                                                dataDec_Conv = int.Parse(raw_OutdataHex[i], System.Globalization.NumberStyles.HexNumber);
-                                                if (dataDec_Conv > 99)
-                                                {
-                                                    b_reg2DID = false;
-                                                    R_MIPI = 2;
-                                                    appendDec = "-999999999999";
+                                                    R_MIPI = -1;
+                                                    R_ReadMipiReg = tmpOutData_DecConv;
                                                     break;
                                                 }
                                                 else
                                                 {
-                                                    if (dataDec_Conv <= 9)
+                                                    //burn OTP register
+                                                    if ((BurnOTP) && (sumVal > 0))
                                                     {
-                                                        raw_OutdataDec = "0" + dataDec_Conv;
-                                                    }
-                                                    else
-                                                    {
-                                                        raw_OutdataDec = dataDec_Conv.ToString();
-                                                    }
+                                                        //Set VBATT only to prepare for otp burn procedure
+                                                        for (int i = 0; i < SetSMU.Count(); i++)
+                                                        {
+                                                            bool found = R_SMULabel_ICh[i].Substring(0, R_SMULabel_ICh[i].Length).Contains("BAT");
+                                                            if (found)
+                                                            {
+                                                                Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[i], Eq.Site[0]._EqSMU, (float)5.5, (float)0.1);
+                                                            }
+                                                        }
 
-                                                    appendDec = appendDec + raw_OutdataDec;
+                                                        //Get the program value from Mipi custom spreadsheet 
+                                                        //example : E3:80 -> E3:1000 0000 (in Binary) - will program bit7 
+                                                        //regMapValue[0] = E3 , regMapValue[1] = 80
+                                                        //dataHex will be stored with 80
+                                                        //split string with blank space as delimiter
+                                                        biasDataArr = CusMipiRegMap.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);     //split string with blank space as delimiter
+                                                        for (int i = 0; i < biasDataArr.Length; i++)
+                                                        {
+                                                            string[] regMapValue = biasDataArr[i].Split(':');
+                                                            dataHex[i] = regMapValue[1];
+                                                        }
 
-                                                    if (data2DID[i] != raw_OutdataDec)
-                                                    {
-                                                        R_MIPI = 9;     //Burn OTP not same as PartSN_2 flag
-                                                        b_reg2DID = false;
+                                                        //burn_OTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
+                                                        burn_AceOTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
+
+                                                        #region Read Back MIPI register
+                                                        #region Turn off SMU and VIO - to prepare for read back mipi register
+                                                        if (EqmtStatus.SMU)
+                                                        {
+                                                            Eq.Site[0]._Eq_SMUDriver.DcOff(Eq.Site[0]._SMUSetting, Eq.Site[0]._EqSMU);
+                                                        }
+
+                                                        Eq.Site[0]._EqMiPiCtrl.TurnOff_VIO(Convert.ToInt16(CusMipiPair));        //mipi pair - derive from MIPI spereadsheet
+                                                        DelayMs(_RdCurr_Delay);
+                                                        #endregion
+
+                                                        //read back register and compare with program data
+                                                        mask_viaEffectiveBit(dataHex, _SwBand, CusMipiRegMap, out dataDec_Conv);
+                                                        readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out R_ReadMipiReg, out dummyStrData);
+                                                        if (R_ReadMipiReg == dataDec_Conv)
+                                                        {
+                                                            R_MIPI = 1;
+                                                        }
+                                                        else
+                                                        {
+                                                            R_MIPI = -1;
+                                                        }
+
+                                                        #endregion
                                                     }
                                                 }
                                             }
+                                        }
 
-                                            R_partSN2_postReg = Convert.ToInt64(appendDec);
+                                        #endregion
+                                        break;
 
-                                            if (b_reg2DID)
+
+
+                                    case "CM_ID":
+                                    case "CMID":
+                                        #region Burn CM ID
+                                        //Check CM base on Device ID scanning
+                                        string[] tmpDeviceID = new string[3];
+                                        try
+                                        {
+                                            tmpDeviceID = deviceID.Split('-');
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            throw new Exception("DEVICE ID FORMAT INCORRECT (ENGR-XXXX-Y) : " + deviceID + " -> " + ex.Message);
+                                        }
+
+                                        switch (tmpDeviceID[2].ToUpper())
+                                        {
+                                            case "M":
+                                                //Amkor Assembly
+                                                R_MIPI = 1;
+                                                R_ReadMipiReg = tmpOutData_DecConv;
+                                                BurnOTP = false;        //Amkor CM ID = 0 , thus not required to Burn
+                                                break;
+                                            case "A":
+                                                //AseKr Assembly
+                                                R_MIPI = 1;
+                                                BurnOTP = true;         //ASEKr CM ID = 1 , thus Otp Burn is required
+                                                break;
+                                            default:
+                                                MessageBox.Show("CM Site : " + tmpDeviceID[2].ToUpper() + " (CM SITE not supported at this moment)", "MyDUT", MessageBoxButtons.OK);
+                                                R_MIPI = -999;
+                                                BurnOTP = false;        //set flag to false for burning otp
+                                                break;
+                                        }
+
+                                        #region Check Lockbit and CM ID register and Burn Register
+                                        //read lock bit register and compare Lockbit register
+                                        readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
+
+                                        if ((i_lockBit != 0) || (tmpOutData_DecConv != 0))    // '0' not program , '1' have program
+                                        {
+                                            R_MIPI = -1;
+                                            R_ReadMipiReg = tmpOutData_DecConv;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            //burn OTP register
+                                            if ((BurnOTP) && (i_lockBit == 0) && (tmpOutData_DecConv == 0))
                                             {
-                                                R_MIPI = 0;     //all pass flag                                                
-                                            }
+                                                //Set VBATT only to prepare for otp burn procedure
+                                                for (int i = 0; i < SetSMU.Count(); i++)
+                                                {
+                                                    bool found = R_SMULabel_ICh[i].Substring(0, R_SMULabel_ICh[i].Length).Contains("BAT");
+                                                    if (found)
+                                                    {
+                                                        Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[i], Eq.Site[0]._EqSMU, (float)5.5, (float)0.1);
+                                                    }
+                                                }
 
-                                            #endregion
+                                                //Get the program value from Mipi custom spreadsheet 
+                                                //example : E3:80 -> E3:1000 0000 (in Binary) - will program bit7 
+                                                //regMapValue[0] = E3 , regMapValue[1] = 80
+                                                //dataHex will be stored with 80
+                                                //split string with blank space as delimiter
+                                                biasDataArr = CusMipiRegMap.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);     //split string with blank space as delimiter
+                                                for (int i = 0; i < biasDataArr.Length; i++)
+                                                {
+                                                    string[] regMapValue = biasDataArr[i].Split(':');
+                                                    dataHex[i] = regMapValue[1];
+                                                }
+
+                                                burn_OTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
+                                                burn_AceOTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
+
+                                                #region Read Back MIPI register
+
+                                                #region Turn off SMU and VIO - to prepare for read back mipi register
+                                                if (EqmtStatus.SMU)
+                                                {
+                                                    Eq.Site[0]._Eq_SMUDriver.DcOff(Eq.Site[0]._SMUSetting, Eq.Site[0]._EqSMU);
+                                                }
+
+                                                Eq.Site[0]._EqMiPiCtrl.TurnOff_VIO(Convert.ToInt16(CusMipiPair));        //mipi pair - derive from MIPI spereadsheet
+                                                DelayMs(_RdCurr_Delay);
+                                                #endregion
+
+                                                //read back register and compare with program data
+                                                mask_viaEffectiveBit(dataHex, _SwBand, CusMipiRegMap, out dataDec_Conv);
+                                                readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out R_ReadMipiReg, out dummyStrData);
+
+                                                if ((R_ReadMipiReg == dataDec_Conv) && (BurnOTP))
+                                                {
+                                                    //Good - Return Flag '1'
+                                                    R_MIPI = 1;
+                                                }
+                                                else if ((R_ReadMipiReg == 1) && (!BurnOTP))
+                                                {
+                                                    //Bad - Return Flag '-999'
+                                                    R_MIPI = 2;
+                                                }
+
+                                                #endregion
+                                            }
                                         }
                                         #endregion
+
+                                        #endregion
+                                        break;
+
+                                    case "UNIT_2DID":
+                                        #region Burn 2DID data
+
+                                        //note - Status Flag (R_MIPI) 
+                                        //2DID Readback failure - 3
+                                        //2DID info duplicate - 5
+                                        //Lockbit/2DID register not empty - 7
+                                        //2DID register readback not same as PartSN_2 - 9
+                                        //Pass ALL - 0                               
+
+                                        //2DID local variable
+                                        string str2DIDmark = null;
+                                        string strPartSN2 = null;
+
+                                        //Initialize variable
+                                        bool b_reg2DID = false;     //bool for read DUT register
+                                        bool b_str2DID = false;     //bool for read Handler 2DID
+                                        bool success = false;
+                                        char[] sort2DID;
+                                        int regCount = 0;
+
+                                        dataDec_Conv = 0;
+                                        BurnOTP = false;
+
+                                        //reset to default value
+                                        R_MIPI = -999;
+                                        R_ReadMipiReg_long = -999;
+                                        R_partSN2_2DID = -999;
+                                        R_partSN2_preReg = -999;
+                                        R_partSN2_postReg = -999;
+
+                                        string[] raw_OutdataHex;
+                                        string raw_OutdataDec = null;
+                                        string[] data2DID;
+
+                                        #region Read Register and return Data - derive from Mipi custom spreadsheet
+                                        //Search and return Data from Mipi custom spreadsheet 
+                                        searchMIPIKey(_TestParam, _SwBand, out CusMipiRegMap, out CusPMTrigMap, out CusSlaveAddr, out CusMipiPair, out CusMipiSite, out b_mipiTKey);
+
+                                        biasDataArr = CusMipiRegMap.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);     //split string with blank space as delimiter
+                                        dataHex = new string[biasDataArr.Length];
+                                        raw_OutdataHex = new string[biasDataArr.Length];
+                                        data2DID = new string[biasDataArr.Length];
+
+                                        readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out raw_OutdataHex, out dataSizeHex);
+
+                                        //check if blank register
+                                        appendDec = null;
+                                        b_reg2DID = true;   //set to default
+
+                                        for (int i = 0; i < raw_OutdataHex.Length; i++)
+                                        {
+                                            dataDec_Conv = int.Parse(raw_OutdataHex[i], System.Globalization.NumberStyles.HexNumber);
+
+                                            if (dataDec_Conv <= 99)       //Note 2DID register max value until dec 99 only
+                                            {
+                                                if (dataDec_Conv <= 9)
+                                                {
+                                                    raw_OutdataDec = "0" + dataDec_Conv;
+                                                }
+                                                else
+                                                {
+                                                    raw_OutdataDec = dataDec_Conv.ToString();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                R_MIPI = 2; //register readback fail flag
+                                                b_reg2DID = false;
+                                            }
+
+                                            appendDec = appendDec + raw_OutdataDec;
+                                        }
+
+                                        success = long.TryParse(appendDec, out R_partSN2_preReg);  //check if return data from register must not exceed '99' for every register address
+                                        if (!success)
+                                        {
+                                            b_reg2DID = false;
+                                            R_MIPI = 2; //register readback fail flag
+                                            R_partSN2_preReg = 999999999999;
+                                        }
+                                        #endregion
+
+                                        if (EqmtStatus.handler)
+                                        {
+                                            #region 2DID Handler TCP
+                                            HandlerLotInfo hli = new HandlerLotInfo();
+                                            hli = TcpClient.LastTestedInTheLotQuery();
+                                            #endregion
+
+                                            #region decode 2DID
+                                            //default setting
+                                            //Total EFuse Register = 6
+                                            //Total data = 24 numerics , Effective numeric data from 13 to 24 , numeric data  1 to 12 not use
+                                            //Example str2DIDmark = "193713219999999999100500";
+
+                                            str2DIDmark = string.Format("{0:D24}", hli.strBarcodeID);
+
+                                            if (str2DIDmark != null && str2DIDmark.Length == 24)
+                                            {
+                                                //for double unit marking detection
+                                                if (str2DIDmark != Previous2DIDmark)
+                                                {
+                                                    sort2DID = new char[str2DIDmark.Length];
+                                                    Previous2DIDmark = str2DIDmark;
+                                                }
+                                                else
+                                                {
+                                                    //flag for double unit marking
+                                                    str2DIDmark = "-1";
+                                                    R_partSN2_2DID = -1;
+                                                    R_MIPI = 5; //double unit fail flag
+                                                }
+                                            }
+                                            else
+                                            {
+                                                //if cannot read from handler
+                                                str2DIDmark = "-999";
+                                                R_partSN2_2DID = -99999;
+                                                R_MIPI = 3; //readback fail flag
+                                            }
+
+                                            if (str2DIDmark != "-999" && str2DIDmark != "0" && str2DIDmark != "-1")
+                                            {
+                                                b_str2DID = true;     //set to default                                            
+                                                count = 0;
+                                                sort2DID = str2DIDmark.ToCharArray();
+
+                                                for (int i = 12; i < str2DIDmark.Length; i++)
+                                                {
+                                                    count++;
+                                                    if (count == 2) //do checking for every 2 number
+                                                    {
+                                                        if (regCount < dataHex.Length)
+                                                        {
+                                                            //take 2 numerical data to form 1x Hex Data
+                                                            //eg sort2DID[12] = '5' & eg sort2DID[13] = '0'
+                                                            //Then if the appended sort2DID[12] & sort2DID[13] is a valid number (note : max number is 99)
+                                                            string tmpDataDec = sort2DID[i - 1].ToString() + sort2DID[i].ToString();
+
+                                                            success = Int32.TryParse(tmpDataDec, out dataDec_Conv);       //check if 2DID marking data is valid -  ie valid number(can convert from Hex to Integer back and forth & must be less than '99') 
+
+                                                            if (!success)
+                                                            {
+                                                                MessageBox.Show("Test Parameter : " + _TestParam + " - String to Decimal Conversion Unsuccessful >> Input String With Wrong Format : " + tmpDataDec, "MyDUT", MessageBoxButtons.OK);
+                                                                dataDec_Conv = 0;       //set to default '0' if fail conversion
+                                                                b_str2DID = false;
+                                                                R_MIPI = 3; //handler 2DID readback fail flag
+                                                            }
+
+                                                            //store scan 2DID value for later comparison
+                                                            if (dataDec_Conv <= 9)
+                                                            {
+                                                                data2DID[regCount] = "0" + dataDec_Conv.ToString();
+                                                            }
+                                                            else
+                                                            {
+                                                                data2DID[regCount] = dataDec_Conv.ToString();
+                                                            }
+
+                                                            dataHex[regCount] = dataDec_Conv.ToString("X2");        //convert dec to hex and pass data for burn otp process
+                                                            count = 0;
+                                                            regCount++;
+                                                        }
+                                                    }
+                                                }
+
+                                                //re-arrange only partSN2_2DID
+                                                for (int i = 0; i < data2DID.Length; i++)
+                                                {
+                                                    strPartSN2 = strPartSN2 + data2DID[i];
+                                                }
+
+                                                R_partSN2_2DID = Convert.ToInt64(strPartSN2);
+                                            }
+                                            #endregion
+                                        }
+                                        else
+                                        {
+                                            //Handler not enable
+                                            b_str2DID = false;
+                                            R_MIPI = 3;
+                                            R_ReadMipiReg_long = -99999;
+                                            R_partSN2_2DID = -99999;
+                                            R_partSN2_postReg = -99999;
+                                        }
+
+                                        //change OTP Burn flag to true if Read DUT Register and Read Handler 2DID is success
+                                        if (b_str2DID && b_reg2DID)
+                                        {
+                                            BurnOTP = true;
+                                        }
+
+                                        if (BurnOTP)
+                                        {
+                                            #region Burn OTP
+                                            //read lock bit register and compare Lockbit register
+                                            readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, _Search_Value, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out i_lockBit, out dummyStrData);
+
+                                            if ((i_lockBit != 0) || (R_partSN2_preReg != 0) || !BurnOTP)    // '0' not program , '1' have program
+                                            {
+                                                if (R_partSN2_preReg == R_partSN2_2DID)
+                                                {
+                                                    R_MIPI = 0;     // 2DID Pre register match with 2DID PartSN2
+                                                    R_partSN2_postReg = 0;       //make post register readout to 0 as per PE request
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    R_MIPI = 7;     //lockbit/2DID register not empty flag  
+                                                    R_partSN2_postReg = 0;       //make post register readout to 0 as per PE request
+                                                    break;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                //burn OTP register
+                                                //Set VBATT only to prepare for otp burn procedure
+                                                for (int i = 0; i < SetSMU.Count(); i++)
+                                                {
+                                                    bool found = R_SMULabel_ICh[i].Substring(0, R_SMULabel_ICh[i].Length).Contains("BAT");
+                                                    if (found)
+                                                    {
+                                                        Eq.Site[0]._Eq_SMUDriver.SetVolt(Eq.Site[0]._SMUSetting[i], Eq.Site[0]._EqSMU, (float)5.5, (float)0.1);
+                                                    }
+                                                }
+
+                                                burn_AceOTPReg_viaEffectiveBit(_TestParam, CusMipiRegMap, CusMipiPair, CusSlaveAddr, dataHex);
+
+                                                #region Read Back MIPI register
+
+                                                #region Turn off SMU and VIO - to prepare for read back mipi register
+                                                if (EqmtStatus.SMU)
+                                                {
+                                                    Eq.Site[0]._Eq_SMUDriver.DcOff(Eq.Site[0]._SMUSetting, Eq.Site[0]._EqSMU);
+                                                }
+                                                Eq.Site[0]._EqMiPiCtrl.TurnOff_VIO(Convert.ToInt16(CusMipiPair));        //mipi pair - derive from MIPI spereadsheet
+                                                DelayMs(_RdCurr_Delay);
+                                                #endregion
+
+                                                //read back register and compare with program data
+                                                b_reg2DID = true;       //set to default
+                                                appendDec = null;
+                                                raw_OutdataHex = new string[biasDataArr.Length];
+
+                                                readout_OTPReg_viaEffectiveBit(_RdCurr_Delay, _SwBand, CusMipiRegMap, CusPMTrigMap, CusSlaveAddr, CusMipiPair, CusMipiSite, out raw_OutdataHex, out dummyStrData);
+
+                                                for (int i = 0; i < raw_OutdataHex.Length; i++)
+                                                {
+                                                    //check if 2DID reg data is valid - ie less or equal '99'
+                                                    dataDec_Conv = int.Parse(raw_OutdataHex[i], System.Globalization.NumberStyles.HexNumber);
+                                                    if (dataDec_Conv > 99)
+                                                    {
+                                                        b_reg2DID = false;
+                                                        R_MIPI = 2;
+                                                        appendDec = "-999999999999";
+                                                        break;
+                                                    }
+                                                    else
+                                                    {
+                                                        if (dataDec_Conv <= 9)
+                                                        {
+                                                            raw_OutdataDec = "0" + dataDec_Conv;
+                                                        }
+                                                        else
+                                                        {
+                                                            raw_OutdataDec = dataDec_Conv.ToString();
+                                                        }
+
+                                                        appendDec = appendDec + raw_OutdataDec;
+
+                                                        if (data2DID[i] != raw_OutdataDec)
+                                                        {
+                                                            R_MIPI = 9;     //Burn OTP not same as PartSN_2 flag
+                                                            b_reg2DID = false;
+                                                        }
+                                                    }
+                                                }
+
+                                                R_partSN2_postReg = Convert.ToInt64(appendDec);
+
+                                                if (b_reg2DID)
+                                                {
+                                                    R_MIPI = 0;     //all pass flag                                                
+                                                }
+
+                                                #endregion
+                                            }
+                                            #endregion
+                                        }
+
+                                        #endregion
+                                        break;
+
+                                    default:
+                                        MessageBox.Show("Test Parameter : " + _TestParam + "(" + _Search_Method + ") - Search Method not supported at this moment.", "MyDUT", MessageBoxButtons.OK);
+                                        break;
+                                }
+
+                                //Build Test Result
+                                if (_TestParaName.Contains("RF1-OUTLIER-FLAG"))
+                                {
+                                    ResultBuilder.BuildResults(ref results, "OUTLIER_SUMVAL", "NA", sumVal);
+                                }
+
+                                if (!b_GE_Header)
+                                {
+                                    _Test_MIPI = false;         //ensure that the MIPI flag in this case is set to false to avoid duplicate result at the end 
+                                    if (_Search_Method.ToUpper() == "UNIT_2DID")
+                                    {
+                                        ResultBuilder.BuildResults(ref results, _TestParaName + "_STATUS", "NA", R_MIPI);
+                                        ResultBuilder.BuildResults(ref results, _TestParaName + "_PARTSN2", "dec", R_partSN2_2DID);
+                                        ResultBuilder.BuildResults(ref results, _TestParaName + "_READ_OTP2DID_PRE", "dec", R_partSN2_preReg);
+                                        ResultBuilder.BuildResults(ref results, _TestParaName + "_READ_OTP2DID_POST", "dec", R_partSN2_postReg);
+                                    }
+                                    else
+                                    {
+                                        ResultBuilder.BuildResults(ref results, _TestParaName + "_STATUS", "NA", R_MIPI);
+                                        ResultBuilder.BuildResults(ref results, _TestParaName, "dec", R_ReadMipiReg);
+
+                                        if (_TestParaName.Contains("PASSFLAG"))
+                                        {
+                                            if (!ResultBuilder.CheckPass(_TestParaName, R_ReadMipiReg))
+                                            {
+                                                ResultBuilder.FailedTests[0].Add(_TestParaName);
+                                            }
+                                            if (!ResultBuilder.CheckPass(_TestParaName + "_STATUS", R_MIPI))
+                                            {
+                                                ResultBuilder.FailedTests[0].Add(_TestParaName + "_STATUS");
+                                            }
+                                        }
                                     }
 
-                                    #endregion
-                                    break;
-
-                                default:
-                                    MessageBox.Show("Test Parameter : " + _TestParam + "(" + _Search_Method + ") - Search Method not supported at this moment.", "MyDUT", MessageBoxButtons.OK);
-                                    break;
-                            }
-
-                            //Build Test Result
-                            if (_TestParaName.Contains("RF1-OUTLIER-FLAG"))
-                            {
-                                ResultBuilder.BuildResults(ref results, "OUTLIER_SUMVAL", "NA", sumVal);
-                            }
-
-                            if (!b_GE_Header)
-                            {
-                                _Test_MIPI = false;         //ensure that the MIPI flag in this case is set to false to avoid duplicate result at the end 
-                                if (_Search_Method.ToUpper() == "UNIT_2DID")
-                                {
-                                    ResultBuilder.BuildResults(ref results, _TestParaName + "_STATUS", "NA", R_MIPI);
-                                    ResultBuilder.BuildResults(ref results, _TestParaName + "_PARTSN2", "dec", R_partSN2_2DID);
-                                    ResultBuilder.BuildResults(ref results, _TestParaName + "_READ_OTP2DID_PRE", "dec", R_partSN2_preReg);
-                                    ResultBuilder.BuildResults(ref results, _TestParaName + "_READ_OTP2DID_POST", "dec", R_partSN2_postReg);
                                 }
                                 else
                                 {
-                                    ResultBuilder.BuildResults(ref results, _TestParaName + "_STATUS", "NA", R_MIPI);
-                                    ResultBuilder.BuildResults(ref results, _TestParaName, "dec", R_ReadMipiReg);
+                                    _Test_MIPI = false;         //ensure that the MIPI flag in this case is set to false to avoid duplicate result at the end 
 
-                                    if (_TestParaName.Contains("PASSFLAG"))
+                                    if (_Search_Method.ToUpper() == "UNIT_2DID")
                                     {
-                                        if (!ResultBuilder.CheckPass(_TestParaName, R_ReadMipiReg))
-                                        {
-                                            ResultBuilder.FailedTests[0].Add(_TestParaName);
-                                        }
-                                        if (!ResultBuilder.CheckPass(_TestParaName + "_STATUS", R_MIPI))
-                                        {
-                                            ResultBuilder.FailedTests[0].Add(_TestParaName + "_STATUS");
-                                        }
+                                        string GE_TestParam = null;
+                                        Rslt_GE_Header = new s_GE_Header();
+                                        Decode_GE_Header(TestPara, out Rslt_GE_Header);
+
+                                        Rslt_GE_Header.Param = "_MIPI_ReadTxReg";
+
+                                        Rslt_GE_Header.Note = "_NOTE_READ_OTP2DID_PRE";  //re-assign ge header
+                                        Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
+                                        ResultBuilder.BuildResults(ref results, GE_TestParam, "dec", R_partSN2_preReg);
+
+                                        Rslt_GE_Header.Note = "_NOTE_READ_OTP2DID_POST";  //re-assign ge header
+                                        Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
+                                        ResultBuilder.BuildResults(ref results, GE_TestParam, "dec", R_partSN2_postReg);
+
+                                        Rslt_GE_Header.Param = "_MIPI_OTPBURN";
+
+                                        Rslt_GE_Header.Note = "_NOTE_OTP_2DID";  //re-assign ge header
+                                        Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
+                                        ResultBuilder.BuildResults(ref results, GE_TestParam, "dec", R_partSN2_2DID);
+
+                                        Rslt_GE_Header.Note = "_NOTE_2DID_OTP_STATUS";  //re-assign ge header
+                                        Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
+                                        ResultBuilder.BuildResults(ref results, GE_TestParam, "NA", R_MIPI);
                                     }
-                                }
-
-                            }
-                            else
-                            {
-                                _Test_MIPI = false;         //ensure that the MIPI flag in this case is set to false to avoid duplicate result at the end 
-
-                                if (_Search_Method.ToUpper() == "UNIT_2DID")
-                                {
-                                    string GE_TestParam = null;
-                                    Rslt_GE_Header = new s_GE_Header();
-                                    Decode_GE_Header(TestPara, out Rslt_GE_Header);
-
-                                    Rslt_GE_Header.Param = "_MIPI_ReadTxReg";
-
-                                    Rslt_GE_Header.Note = "_NOTE_READ_OTP2DID_PRE";  //re-assign ge header
-                                    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
-                                    ResultBuilder.BuildResults(ref results, GE_TestParam, "dec", R_partSN2_preReg);
-
-                                    Rslt_GE_Header.Note = "_NOTE_READ_OTP2DID_POST";  //re-assign ge header
-                                    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
-                                    ResultBuilder.BuildResults(ref results, GE_TestParam, "dec", R_partSN2_postReg);
-
-                                    Rslt_GE_Header.Param = "_MIPI_OTPBURN";
-
-                                    Rslt_GE_Header.Note = "_NOTE_OTP_2DID";  //re-assign ge header
-                                    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
-                                    ResultBuilder.BuildResults(ref results, GE_TestParam, "dec", R_partSN2_2DID);
-
-                                    Rslt_GE_Header.Note = "_NOTE_2DID_OTP_STATUS";  //re-assign ge header
-                                    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
-                                    ResultBuilder.BuildResults(ref results, GE_TestParam, "NA", R_MIPI);
-                                }
-                                else
-                                {
-                                    string GE_TestParam = null;
-                                    Rslt_GE_Header = new s_GE_Header();
-                                    Decode_GE_Header(TestPara, out Rslt_GE_Header);
-
-                                    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
-                                    ResultBuilder.BuildResults(ref results, GE_TestParam, "dec", R_ReadMipiReg);
-
-                                    if (GE_TestParam.Contains("PASSFLAG"))
+                                    else
                                     {
-                                        if (!ResultBuilder.CheckPass(GE_TestParam, R_ReadMipiReg))
+                                        string GE_TestParam = null;
+                                        Rslt_GE_Header = new s_GE_Header();
+                                        Decode_GE_Header(TestPara, out Rslt_GE_Header);
+
+                                        Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
+                                        ResultBuilder.BuildResults(ref results, GE_TestParam, "dec", R_ReadMipiReg);
+
+                                        if (GE_TestParam.Contains("PASSFLAG"))
                                         {
-                                            ResultBuilder.FailedTests[0].Add(GE_TestParam);
+                                            if (!ResultBuilder.CheckPass(GE_TestParam, R_ReadMipiReg))
+                                            {
+                                                ResultBuilder.FailedTests[0].Add(GE_TestParam);
+                                            }
                                         }
-                                    }
 
-                                    Rslt_GE_Header.Note = Rslt_GE_Header.Note + "_STATUS";  //re-assign ge header
-                                    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
-                                    ResultBuilder.BuildResults(ref results, GE_TestParam, "NA", R_MIPI);
+                                        Rslt_GE_Header.Note = Rslt_GE_Header.Note + "_STATUS";  //re-assign ge header
+                                        Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
+                                        ResultBuilder.BuildResults(ref results, GE_TestParam, "NA", R_MIPI);
 
-                                    if (GE_TestParam.Contains("PASSFLAG_STATUS"))
-                                    {
-                                        if (!ResultBuilder.CheckPass(GE_TestParam, R_MIPI))
+                                        if (GE_TestParam.Contains("PASSFLAG_STATUS"))
                                         {
-                                            ResultBuilder.FailedTests[0].Add(GE_TestParam);
+                                            if (!ResultBuilder.CheckPass(GE_TestParam, R_MIPI))
+                                            {
+                                                ResultBuilder.FailedTests[0].Add(GE_TestParam);
+                                            }
                                         }
                                     }
                                 }
                             }
-
                             //    Eq.Site[0]._EqMiPiCtrl.TurnOff_VIO(Convert.ToInt16(CusMipiPair));        //mipi pair - derive from MIPI spereadsheet
 
                             tTime.Stop();
@@ -16739,11 +16765,12 @@ namespace MyProduct
 
                 for (int i = 0; i < NumberOfRunsColdNF; i++)
                 {
-                    Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i);
+                  //  Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i);
+                    Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i, ref Th.coldsource, ref Th.dutnoisefigure);
 
                     for (int j = 0; j < Nop_ColdNF; j++)
                     {
-                        double Cold_NF_withoutGain = (Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[j].ToString().Contains("NaN") || Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[j].ToString().Contains("Infinity") || Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[j].ToString().Contains("∞")) ? 9999 : Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[j];
+                        double Cold_NF_withoutGain = (Th.dutnoisefigure[j].ToString().Contains("NaN") || Th.dutnoisefigure[j].ToString().Contains("Infinity") || Th.dutnoisefigure[j].ToString().Contains("∞")) ? 9999 : Th.dutnoisefigure[j];
 
                         if (Cold_NF_withoutGain == 9999 || PXITrace[Th.ColdNF_TestCount].Multi_Trace[0][i].RxGain[j].ToString().Contains("Infinity") || PXITrace[Th.ColdNF_TestCount].Multi_Trace[0][i].RxGain[j].ToString().Contains("NaN"))
                         {
@@ -16755,7 +16782,8 @@ namespace MyProduct
                             Cold_NF_new[i][j] = Cold_NF_withoutGain - (PXITrace[Th.ColdNF_TestCount].Multi_Trace[0][i].RxGain[j]);
                         }
 
-                        Cold_NoisePower_new[i][j] = Eq.Site[0]._EqRFmx.cRFmxNF.coldSourcePower[j] - Th.RXPathLoss_Cold[j];
+
+                        Cold_NoisePower_new[i][j] = Th.coldsource[j] - Th.RXPathLoss_Cold[j];
 
                     }
                 }
@@ -16767,8 +16795,9 @@ namespace MyProduct
                 {
                     for (int j = 0; j < Nop_HotNF; j++)
                     {
-                        Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.HotNF_TestCount, j, "result::" + "HOT" + Th.HotNF_TestCount + "_" + i.ToString() + "_" + j.ToString());
-                        double Hot_NF_withoutGain = (Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[0].ToString().Contains("NaN") || Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[0].ToString().Contains("Infinity") || Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[0].ToString().Contains("∞")) ? 9999 : Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[0];
+                  //      Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.HotNF_TestCount, j, "result::" + "HOT" + Th.HotNF_TestCount + "_" + i.ToString() + "_" + j.ToString());
+                        Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.HotNF_TestCount, j, "result::" + "HOT" + Th.HotNF_TestCount + "_" + i.ToString() + "_" + j.ToString(), ref Th.coldsource, ref Th.dutnoisefigure);
+                        double Hot_NF_withoutGain = (Th.dutnoisefigure[0].ToString().Contains("NaN") || Th.dutnoisefigure[0].ToString().Contains("Infinity") || Th.dutnoisefigure[0].ToString().Contains("∞")) ? 9999 : Th.dutnoisefigure[0];
 
                         if (Hot_NF_withoutGain == 9999 || PXITrace[Th.HotNF_TestCount].Multi_Trace[0][i].RxGain[j].ToString().Contains("Infinity") || PXITrace[Th.HotNF_TestCount].Multi_Trace[0][i].RxGain[j].ToString().Contains("NaN"))
                         {
@@ -16780,7 +16809,7 @@ namespace MyProduct
                             Hot_NF_new[i][j] = Hot_NF_withoutGain - (PXITrace[Th.HotNF_TestCount].Multi_Trace[0][i].RxGain[j]);
                         }
 
-                        Hot_NoisePower_new[i][j] = Eq.Site[0]._EqRFmx.cRFmxNF.coldSourcePower[0] - Th.RXPathLoss_Hot[j];
+                        Hot_NoisePower_new[i][j] = Th.coldsource[0] - Th.RXPathLoss_Hot[j];
 
                     }
                 }
@@ -17109,11 +17138,12 @@ namespace MyProduct
 
                 for (int i = 0; i < NumberOfRunsColdNF; i++)
                 {
-                    Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i);
+                    Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i, ref Th.coldsource, ref Th.dutnoisefigure);
+                  //  Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i);
 
                     for (int j = 0; j < Nop_ColdNF; j++)
                     {
-                        double Cold_NF_withoutGain = (Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[j].ToString().Contains("NaN") || Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[j].ToString().Contains("Infinity") || Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[j].ToString().Contains("∞")) ? 9999 : Eq.Site[0]._EqRFmx.cRFmxNF.dutNoiseFigure[j];
+                        double Cold_NF_withoutGain = (Th.dutnoisefigure[j].ToString().Contains("NaN") || Th.dutnoisefigure[j].ToString().Contains("Infinity") || Th.dutnoisefigure[j].ToString().Contains("∞")) ? 9999 : Th.dutnoisefigure[j];
 
                         if (Cold_NF_withoutGain == 9999 || PXITrace[Th.ColdNF_TestCount].Multi_Trace[0][i].RxGain[j].ToString().Contains("Infinity") || PXITrace[Th.ColdNF_TestCount].Multi_Trace[0][i].RxGain[j].ToString().Contains("NaN"))
                         {
@@ -17125,7 +17155,7 @@ namespace MyProduct
                             Cold_NF_new[i][j] = Cold_NF_withoutGain - (PXITrace[Th.ColdNF_TestCount].Multi_Trace[0][i].RxGain[j]);
                         }
 
-                        Cold_NoisePower_new[i][j] = Eq.Site[0]._EqRFmx.cRFmxNF.coldSourcePower[j] - Th.RXPathLoss_Cold[j];
+                        Cold_NoisePower_new[i][j] = Th.coldsource[j] - Th.RXPathLoss_Cold[j];
 
                     }
                 }
@@ -17793,6 +17823,7 @@ namespace MyProduct
             public s_TraceData[] _PXITraceRaw;
 
             public int _TestCount;
+            public bool DataCheckFirst = false;
         }
 
         public class Result_Class
@@ -17830,11 +17861,12 @@ namespace MyProduct
             public double StepTXFreq1;
             public bool Disp_ColdTrace;
             public bool Test_NF1;
-
+            public double[] coldsource;
+            public double[] dutnoisefigure;
 
             public Threading_Class(int _TestCount, int _ColdNF_TestCount, int _HotNF_TestCount, string _TestUsePrev, double[] _RXPathLoss_Cold, double[] _RXPathLoss_Hot,
-                string _TestParaName, bool _Save_MXATrace, string _TestNum, double _StartRXFreq1, double _StopRXFreq1, double _StepRXFreq1,
-                double _StartTXFreq1, double _StopTXFreq1, double _StepTXFreq1, bool _Disp_ColdTrace, bool _Test_NF1)
+             string _TestParaName, bool _Save_MXATrace, string _TestNum, double _StartRXFreq1, double _StopRXFreq1, double _StepRXFreq1,
+             double _StartTXFreq1, double _StopTXFreq1, double _StepTXFreq1, bool _Disp_ColdTrace, bool _Test_NF1)
             {
                 TestCount = _TestCount;
                 ColdNF_TestCount = _ColdNF_TestCount;
@@ -17868,6 +17900,7 @@ namespace MyProduct
             public double[] R_DC_ICh;
             public string[] R_DCLabel_ICh;
             public bool FirstDC;
+
 
             public Threading_Measure_SupplyDC_Class(string _TestNum, string _DCSetCh, string _DCMeasCh, float[] _DCVCh, float[] _DCLimitCh, double[] _R_DC_ICh, string[] _R_DCLabel_ICh, bool _FirstDC)
             {

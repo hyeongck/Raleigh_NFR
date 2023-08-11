@@ -645,29 +645,45 @@ namespace LibEqmtDriver.NF_VST
                 specNFColdSource[Iteration].NF.Configuration.ConfigureFrequencyListStartStopPoints("", startFreq_Conversion, stopFreq_Conversion, StepPoints);
             }
 
-            public void RetrieveResults_NFColdSource(int Iteration)
+            //public void RetrieveResults_NFColdSource(int Iteration)
+            //{
+            //    try
+            //    {
+
+            //        specNFColdSource[Iteration].NF.Results.FetchColdSourcePower("", timeout, ref coldSourcePower);
+            //        specNFColdSource[Iteration].NF.Results.FetchAnalyzerNoiseFigure("", timeout, ref analyserNoiseFigure);
+            //        specNFColdSource[Iteration].NF.Results.FetchDutNoiseFigureAndGain("", timeout, ref dutNoiseFigure, ref dutNoiseTemperature, ref dutGain);
+            //        //specNFColdSource[Iteration].NF.Configuration.GetFrequencyList("", ref frequencyListOut);
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        MessageBox.Show(e.ToString());
+            //    }
+            //}
+
+            //public void RetrieveResults_NFColdSource(int Iteration, string Count)
+            //{
+            //    try
+            //    {
+            //        specNFColdSource[Iteration].NF.Results.FetchColdSourcePower(Count, timeout, ref coldSourcePower);
+            //        specNFColdSource[Iteration].NF.Results.FetchAnalyzerNoiseFigure(Count, timeout, ref analyserNoiseFigure);
+            //        specNFColdSource[Iteration].NF.Results.FetchDutNoiseFigureAndGain(Count, timeout, ref dutNoiseFigure, ref dutNoiseTemperature, ref dutGain);
+            //        //specNFColdSource[Iteration].NF.Configuration.GetFrequencyList(Count, ref frequencyListOut);
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        MessageBox.Show(e.ToString());
+            //    }
+            //}
+
+            public void RetrieveResults_NFColdSource(int Iteration, int HotIteration, string Count)
             {
                 try
                 {
 
-                    specNFColdSource[Iteration].NF.Results.FetchColdSourcePower("", timeout, ref coldSourcePower);
-                    specNFColdSource[Iteration].NF.Results.FetchAnalyzerNoiseFigure("", timeout, ref analyserNoiseFigure);
-                    specNFColdSource[Iteration].NF.Results.FetchDutNoiseFigureAndGain("", timeout, ref dutNoiseFigure, ref dutNoiseTemperature, ref dutGain);
-                    //specNFColdSource[Iteration].NF.Configuration.GetFrequencyList("", ref frequencyListOut);
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.ToString());
-                }
-            }
-
-            public void RetrieveResults_NFColdSource(int Iteration, string Count)
-            {
-                try
-                {
-                    specNFColdSource[Iteration].NF.Results.FetchColdSourcePower(Count, timeout, ref coldSourcePower);
-                    specNFColdSource[Iteration].NF.Results.FetchAnalyzerNoiseFigure(Count, timeout, ref analyserNoiseFigure);
-                    specNFColdSource[Iteration].NF.Results.FetchDutNoiseFigureAndGain(Count, timeout, ref dutNoiseFigure, ref dutNoiseTemperature, ref dutGain);
+                    specNFColdSource2[Iteration][HotIteration].NF.Results.FetchColdSourcePower(Count, timeout, ref coldSourcePower);
+                    specNFColdSource2[Iteration][HotIteration].NF.Results.FetchAnalyzerNoiseFigure(Count, timeout, ref analyserNoiseFigure);
+                    specNFColdSource2[Iteration][HotIteration].NF.Results.FetchDutNoiseFigureAndGain(Count, timeout, ref dutNoiseFigure, ref dutNoiseTemperature, ref dutGain);
                     //specNFColdSource[Iteration].NF.Configuration.GetFrequencyList(Count, ref frequencyListOut);
                 }
                 catch (Exception e)
@@ -675,15 +691,14 @@ namespace LibEqmtDriver.NF_VST
                     MessageBox.Show(e.ToString());
                 }
             }
-
-            public void RetrieveResults_NFColdSource(int Iteration, int HotIteration, string Count)
+            public void RetrieveResults_NFColdSource(int Iteration, int HotIteration, string Count, ref double[] coldsourcepower, ref double[] dutnoiseefigure)
             {
                 try
                 {
              
-                    specNFColdSource2[Iteration][HotIteration].NF.Results.FetchColdSourcePower(Count, timeout, ref coldSourcePower);
+                    specNFColdSource2[Iteration][HotIteration].NF.Results.FetchColdSourcePower(Count, timeout, ref coldsourcepower);
                     specNFColdSource2[Iteration][HotIteration].NF.Results.FetchAnalyzerNoiseFigure(Count, timeout, ref analyserNoiseFigure);
-                    specNFColdSource2[Iteration][HotIteration].NF.Results.FetchDutNoiseFigureAndGain(Count, timeout, ref dutNoiseFigure, ref dutNoiseTemperature, ref dutGain);
+                    specNFColdSource2[Iteration][HotIteration].NF.Results.FetchDutNoiseFigureAndGain(Count, timeout, ref dutNoiseFigure, ref dutnoiseefigure, ref dutGain);
                     //specNFColdSource[Iteration].NF.Configuration.GetFrequencyList(Count, ref frequencyListOut);
                 }
                 catch (Exception e)

@@ -123,6 +123,8 @@ namespace TestPlanCommon.NFModel
                     MyProduct.MyDUT.NFTestCondition test = new MyProduct.MyDUT.NFTestCondition();
                     test._TestCount = T_Count;
 
+                    test.DataCheckFirst = false;
+
                     test._TestNum = ReadTcfData(Data, TCF_Header.ConstTestNum.ToUpper());     //use as array number for data store
                     test._TestParam = ReadTcfData(Data, TCF_Header.ConstTestParam.ToUpper());
                     test._SwBand = ReadTcfData(Data, TCF_Header.ConstSwBand.ToUpper());
@@ -302,11 +304,22 @@ namespace TestPlanCommon.NFModel
 
                                     }
                                     break;
+     
                             }
                             string a = test._TestNum;
 
                             Decode_GE_Header(test, out test.GE_Header, NFTestConditionFactory.DicTestLabel, NFTestConditionFactory.DicMipiKey, NFTestConditionFactory.DicWaveFormAlias);
                             break;
+
+                        case "MIPI_OTP":
+                            switch (test._Search_Method.ToUpper())
+                            {
+                                case "TEST_FLAG":
+                                    test.DataCheckFirst = true;
+                                    break;
+                            }
+                            break;
+
                         #endregion
 
                         #region PIX_TRACE
@@ -1506,14 +1519,9 @@ namespace TestPlanCommon.NFModel
 
                         #endregion
 
-                        //case "SKIP":
-
-                        //    break;
 
                     }
 
-                    //if (testMode != "SKIP")
-                    //{
 
                         string GE_TestParam = null;
                         double R_NF1_Ampl = -999,
@@ -1545,29 +1553,15 @@ namespace TestPlanCommon.NFModel
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
 
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            //Rslt_GE_Header.Param = "_Pin";      //re-assign ge header 
-                            //Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "dBm", R_Pin);
 
-                            ////use as temp data storage for calculating MAX, MIN etc of multiple result
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.PIN].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.PIN].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.PIN].Result_Data = R_Pin;
                         }
                         if (_Test_Pout)
                         {
                             test.GE_Header.Param = "_Pout";
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-
-                            //Rslt_GE_Header.Param = "_Pout";      //re-assign ge header 
-                            //Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "dBm", R_Pin);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            ////use as temp data storage for calculating MAX, MIN etc of multiple result
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.POUT].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.POUT].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.POUT].Result_Data = R_Pout;
+
 
 
                         }
@@ -1576,14 +1570,8 @@ namespace TestPlanCommon.NFModel
                             test.GE_Header.Param = "_Pin";
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-                            //Rslt_GE_Header.Param = "_Pin";      //re-assign ge header 
-                            //Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "dBm", R_Pin1);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "1" + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            ////use as temp data storage for calculating MAX, MIN etc of multiple result
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.PIN1].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.PIN1].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.PIN1].Result_Data = R_Pin1;
+   
 
 
 
@@ -1593,14 +1581,8 @@ namespace TestPlanCommon.NFModel
                             test.GE_Header.Param = "_Pout";
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-                            //Rslt_GE_Header.Param = "_Pout";      //re-assign ge header 
-                            //Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "dBm", R_Pout1);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "1" + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            ////use as temp data storage for calculating MAX, MIN etc of multiple result
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.POUT1].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.POUT1].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.POUT1].Result_Data = R_Pout1;
+ 
 
                         }
                         if (_Test_Pin2)
@@ -1608,14 +1590,7 @@ namespace TestPlanCommon.NFModel
                             test.GE_Header.Param = "_Pin";
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-                            //Rslt_GE_Header.Param = "_Pin";      //re-assign ge header 
-                            //Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "dBm", R_Pin2);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "2" + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            ////use as temp data storage for calculating MAX, MIN etc of multiple result
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.PIN2].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.PIN2].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.PIN2].Result_Data = R_Pin2;
 
                         }
                         if (_Test_Pout2)
@@ -1623,14 +1598,8 @@ namespace TestPlanCommon.NFModel
                             test.GE_Header.Param = "_Pout";
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-
-                            //Rslt_GE_Header.Param = "_Pout";      //re-assign ge header 
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "dBm", R_Pout2);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "2" + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            ////use as temp data storage for calculating MAX, MIN etc of multiple result
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.POUT2].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.POUT2].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.POUT2].Result_Data = R_Pout2;
+          
 
                         }
                         if (_Test_NF1)
@@ -1644,22 +1613,13 @@ namespace TestPlanCommon.NFModel
                             test.GE_Header.Param = "_Gain_RX-Ampl";      //re-assign ge header 
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "dBm", R_NF1_Ampl);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            ////use as temp data storage for calculating MAX, MIN etc of multiple result
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF1_AMPL].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF1_AMPL].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF1_AMPL].Result_Data = R_NF1_Ampl;
+
 
                             test.GE_Header.Param = "_Gain_RX-Ampl-Freq";      //re-assign ge header
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "MHz", R_NF1_Freq);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF1_FREQ].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF1_FREQ].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF1_FREQ].Result_Data = R_NF1_Freq;
 
                         }
                         if (_Test_NF2)
@@ -1667,22 +1627,14 @@ namespace TestPlanCommon.NFModel
                             test.GE_Header.Param = test.GE_Header.Param + "-Ampl";      //re-assign ge header 
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, Rslt_GE_Header.Param, "dBm", R_NF2_Ampl);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            ////use as temp data storage for calculating MAX, MIN etc of multiple result
-
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF2_AMPL].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF2_AMPL].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF2_AMPL].Result_Data = R_NF2_Ampl;
 
                             test.GE_Header.Param = test.GE_Header.Param + "-Freq";      //re-assign ge header
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "MHz", R_NF2_Freq);
+                      
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF2_FREQ].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF2_FREQ].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.NF2_FREQ].Result_Data = R_NF2_Freq;
+
 
                         }
                         if (_Test_Harmonic)
@@ -1690,22 +1642,14 @@ namespace TestPlanCommon.NFModel
                             test.GE_Header.Param = test.GE_Header.Param + "-Ampl";      //re-assign ge header 
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, Rslt_GE_Header.Param, "dBm", R_H2_Ampl);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "_" + Convert.ToString(test._TestNum), GE_TestParam);
-                            ////use as temp data storage for calculating MAX, MIN etc of multiple result
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.HARMONIC_AMPL].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.HARMONIC_AMPL].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.HARMONIC_AMPL].Result_Data = R_H2_Ampl;
+
 
 
                             test.GE_Header.Param = test.GE_Header.Param + "-Freq";      //re-assign ge header
 
                             Construct_GE_Header(test, test.GE_Header, NFTestConditionFactory.DicTestLabel, Band, out GE_TestParam, b_SmuHeader);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "MHz", R_H2_Freq);
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Param + "_" + Convert.ToString(test._TestNum), ge_HeaderStr);
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.HARMONIC_FREQ].Enable = true;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.HARMONIC_FREQ].Result_Header = GE_TestParam;
-                            //MyProduct.MyDUT.Results[T_Count].Multi_Results[(int)MyProduct.e_ResultTag.HARMONIC_FREQ].Result_Data = R_H2_Freq;
 
 
                         }
@@ -1720,9 +1664,6 @@ namespace TestPlanCommon.NFModel
 
                             MyProduct.MyDUT.Header.Add(test.GE_Header.Note + "_" + Convert.ToString(test._TestNum), GE_TestParam);
 
-                            //Rslt_GE_Header.Note = "_NOTE_" + _TestParaName + "_" + _TestNum;      //re-assign ge header 
-                            //Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
-                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "NA", R_MIPI);
                         }
 
                         if (_Test_SMU)
