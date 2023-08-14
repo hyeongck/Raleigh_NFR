@@ -702,7 +702,7 @@ namespace ProductionLib2
             rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^[R]\d{4}"));
             rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^[A]\d{4}"));
             rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^[C]\d{4}"));
-            rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^INT\d{4}"));
+          // rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^INT\d{4}"));
             rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^FWI\d{4}"));
             rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^FWN\d{4}"));
             rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^FWM\d{4}"));
@@ -712,6 +712,8 @@ namespace ProductionLib2
             rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^T\d{4}"));
             rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^AM\d{1,8}")); //Amkor
             rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^[0-9]{1,6}")); //ASEKr
+
+            rxOpID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtOperatorID.Text, @"^IN[A-Z]\d{4}"));
 
             foreach (bool rxOP in rxOpID)
             {
