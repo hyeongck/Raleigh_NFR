@@ -957,6 +957,12 @@ namespace ProductionLib2
             rxDeviceID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtDeviceID.Text, @"^ENGR-\d{4}-AT$")); //Only allow ENGR-8230-AS
             rxDeviceID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtDeviceID.Text, @"^ENGR-\d{4}-MT$")); //Only allow ENGR-8230-MS
 
+
+            rxDeviceID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtDeviceID.Text, @"^ENGR-8234-AF$")); //Only allow ENGR-8234-AF
+            rxDeviceID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtDeviceID.Text, @"^ENGR-8234-MF$")); //Only allow ENGR-8234-MF
+            rxDeviceID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtDeviceID.Text, @"^ENGR-8234-MH$")); //Only allow ENGR-8234-MH
+            rxDeviceID.Add(System.Text.RegularExpressions.Regex.IsMatch(txtDeviceID.Text, @"^ENGR-8234-AH$")); //Only allow ENGR-8234-AH
+
             foreach (bool rxDevID in rxDeviceID)
             {
                 if (rxDevID)

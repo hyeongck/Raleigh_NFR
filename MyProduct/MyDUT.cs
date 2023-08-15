@@ -626,7 +626,7 @@ namespace MyProduct
                             Threading_Class Th_Class = new Threading_Class(TestCount, ColdNF_TestCount, HotNF_TestCount, TestUsePrev, RXPathLoss_Cold, RXPathLoss_Hot,
                         TestParaName, Save_MXATrace, TestNum, StartRXFreq1, StopRXFreq1, StepRXFreq1, StartTXFreq1, StopTXFreq1, StepTXFreq1, Disp_ColdTrace, Test_NF1);
 
-                            //  Threading_NF_MAX_MIN(Th_Class);
+                         //     Threading_NF_MAX_MIN(Th_Class);
                             fetchTask = Task.Factory.StartNew(() => Threading_NF_MAX_MIN(Th_Class));
                             taskFactories.Add(fetchTask);
 
@@ -636,7 +636,7 @@ namespace MyProduct
                             Threading_Class Th_Class = new Threading_Class(TestCount, ColdNF_TestCount, HotNF_TestCount, TestUsePrev, RXPathLoss_Cold, RXPathLoss_Hot,
                                               TestParaName, Save_MXATrace, TestNum, StartRXFreq1, StopRXFreq1, StepRXFreq1, StartTXFreq1, StopTXFreq1, StepTXFreq1, Disp_ColdTrace, Test_NF1);
 
-                            //  Threading_NFG_TRACE_COLD(Th_Class);
+                         //     Threading_NFG_TRACE_COLD(Th_Class);
                             fetchTask = Task.Factory.StartNew(() => Threading_NFG_TRACE_COLD(Th_Class));
                             taskFactories.Add(fetchTask);
                         }
@@ -654,17 +654,15 @@ namespace MyProduct
                             Threading_Measure_SupplyDC_Class Th_Class = new Threading_Measure_SupplyDC_Class(TestNum, DCSetCh, DCMeasCh, DCVCh, DCILimitCh, R_DC_ICh, R_DCLabel_ICh, FirstDC);
 
 
-                            // Threading_Measure_SupplyDC(Th_Class);
-
+                           //  Threading_Measure_SupplyDC(Th_Class);
+                            //
                             fetchTask = Task.Factory.StartNew(() => Threading_Measure_SupplyDC(Th_Class));
                             taskFactories.Add(fetchTask);
                         }
 
-                        //     taskFactories.Add(fetchTask);
+
                         test_time += tTime1.Elapsed.TotalMilliseconds;
 
-
-                        //       Threading_NFG_TRACE_COLD
                     }
 
 
@@ -16765,7 +16763,7 @@ namespace MyProduct
 
                 for (int i = 0; i < NumberOfRunsColdNF; i++)
                 {
-                  //  Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i);
+                 //   Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i);
                     Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i, ref Th.coldsource, ref Th.dutnoisefigure);
 
                     for (int j = 0; j < Nop_ColdNF; j++)

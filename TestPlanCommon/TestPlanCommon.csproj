@@ -62,8 +62,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\System\Avago.ATF.StandardLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="MPAD_TestTimer">
-      <HintPath>..\..\..\System\MPAD_TestTimer.dll</HintPath>
+    <Reference Include="MPAD_TestTimer, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\x64\Debug\MPAD_TestTimer.dll</HintPath>
     </Reference>
     <Reference Include="NationalInstruments.Common, Version=19.0.40.49152, Culture=neutral, PublicKeyToken=dc6ad606294fc298, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

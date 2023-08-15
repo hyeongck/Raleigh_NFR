@@ -691,14 +691,14 @@ namespace LibEqmtDriver.NF_VST
                     MessageBox.Show(e.ToString());
                 }
             }
-            public void RetrieveResults_NFColdSource(int Iteration, int HotIteration, string Count, ref double[] coldsourcepower, ref double[] dutnoiseefigure)
+            public void RetrieveResults_NFColdSource(int Iteration, int HotIteration, string Count, ref double[] coldsourcepower, ref double[] dutNoiseFigure)
             {
                 try
                 {
              
                     specNFColdSource2[Iteration][HotIteration].NF.Results.FetchColdSourcePower(Count, timeout, ref coldsourcepower);
                     specNFColdSource2[Iteration][HotIteration].NF.Results.FetchAnalyzerNoiseFigure(Count, timeout, ref analyserNoiseFigure);
-                    specNFColdSource2[Iteration][HotIteration].NF.Results.FetchDutNoiseFigureAndGain(Count, timeout, ref dutNoiseFigure, ref dutnoiseefigure, ref dutGain);
+                    specNFColdSource2[Iteration][HotIteration].NF.Results.FetchDutNoiseFigureAndGain(Count, timeout, ref dutNoiseFigure, ref dutNoiseTemperature, ref dutGain);
                     //specNFColdSource[Iteration].NF.Configuration.GetFrequencyList(Count, ref frequencyListOut);
                 }
                 catch (Exception e)
