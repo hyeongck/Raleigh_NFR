@@ -717,6 +717,48 @@ namespace MyProduct
             }
             #endregion
 
+
+            int H_Count = 0;
+            bool SpecCheck = true;
+
+            foreach (var key in LResults.Keys)
+            {
+                if (H_Count < 3)
+                {
+                    results.Data.Insert(H_Count + 13, new ATFReturnPararResult(key, LResults[key].Unit));
+                    List<double> Data = new List<double> { Convert.ToDouble(LResults[key].Value) };
+                    results.Data[H_Count + 13].Vals = Data;
+
+                }
+                else
+                {
+                    ResultBuilder.BuildResults(ref results, key, LResults[key].Unit, LResults[key].Value);
+                }
+
+
+                H_Count++;
+
+            }
+
+            foreach (Dictionary<string, string> currTestCond in DicTestPA)
+            {
+                string tmpTestNo = myUtility.ReadTcfData(currTestCond, TCF_Header.ConstTestNum);
+
+                Cs = AllNFtest[tmpTestNo];
+
+                if (Cs.DataCheckFirst)
+                {
+                    Cs.DataCheckFirst = false;
+
+                    ExecuteTest_Verify(currTestCond, ref results);
+
+                    Cs.DataCheckFirst = true;
+                }
+
+            }
+
+
+
             #region Power Off SMU and RF Power - for next DUT
             if (BiasStatus.SMU)
             {
@@ -761,45 +803,7 @@ namespace MyProduct
 
             Eq.Site[0]._EqSwitch.SaveLocalMechSwStatusFile();
 
-            int H_Count = 0;
-            bool SpecCheck = true;
-
-            foreach (var key in LResults.Keys)
-            {
-                if (H_Count < 3)
-                {
-                    results.Data.Insert(H_Count + 13, new ATFReturnPararResult(key, LResults[key].Unit));
-                    List<double> Data = new List<double> { Convert.ToDouble(LResults[key].Value) };
-                    results.Data[H_Count + 13].Vals = Data;
-
-                }
-                else
-                {
-                    ResultBuilder.BuildResults(ref results, key, LResults[key].Unit, LResults[key].Value);
-                }
-
-           
-                H_Count++;
-
-            }
-
-            foreach (Dictionary<string, string> currTestCond in DicTestPA)
-            {
-                string tmpTestNo = myUtility.ReadTcfData(currTestCond, TCF_Header.ConstTestNum);
-
-                Cs = AllNFtest[tmpTestNo];
-
-                if (Cs.DataCheckFirst)
-                {
-                    Cs.DataCheckFirst = false;
-
-                    ExecuteTest_Verify(currTestCond, ref results);
-
-                    Cs.DataCheckFirst = true;
-                }
-
-            }
-
+     
             #region Build Result - the count of switch & test time
 
             ATFResultBuilder.AddResult(ref results, "M_SPDT1Count", "", Eq.Site[0]._EqSwitch.SPDT1CountValue());
@@ -15004,338 +15008,341 @@ namespace MyProduct
 
             try
             {
-                //Add test result
-                if (!b_GE_Header)
+                if (!Cs.DataCheckFirst)
                 {
-                    #region add test result
-                    if (_Test_Pin)
+                    //Add test result
+                    if (!b_GE_Header)
                     {
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Pin", "dBm", R_Pin);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Result_Header = _TestParaName + "_Pin";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Result_Data = R_Pin;
-                    }
-                    if (_Test_Pout)
-                    {
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Pout", "dBm", R_Pout);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Result_Header = _TestParaName + "_Pout";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Result_Data = R_Pout;
-                    }
-                    if (_Test_Pin1)
-                    {
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Pin1", "dBm", R_Pin1);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Result_Header = _TestParaName + "_Pin1";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Result_Data = R_Pin1;
-                    }
-                    if (_Test_Pout1)
-                    {
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Pout1", "dBm", R_Pout1);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Result_Header = _TestParaName + "_Pout1";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Result_Data = R_Pout1;
-                    }
-                    if (_Test_Pin2)
-                    {
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Pin2", "dBm", R_Pin2);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Result_Header = _TestParaName + "_Pin2";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Result_Data = R_Pin2;
-                    }
-                    if (_Test_Pout2)
-                    {
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Pout2", "dBm", R_Pout2);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Result_Header = _TestParaName + "_Pout2";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Result_Data = R_Pout2;
-                    }
-                    if (_Test_NF1)
-                    {
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_RX" + _RX1Band + "_Ampl", "dBm", R_NF1_Ampl);
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_RX" + _RX1Band + "_Freq", "MHz", R_NF1_Freq);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Result_Header = _TestParaName + "_RX" + _RX1Band + "_Ampl";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Result_Data = R_NF1_Ampl;
-
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Result_Header = _TestParaName + "_RX" + _RX1Band + "_FREQ";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Result_Data = R_NF1_Freq;
-                    }
-                    if (_Test_NF2)
-                    {
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_RX" + _RX2Band + "_Ampl", "dBm", R_NF2_Ampl);
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_RX" + _RX2Band + "_Freq", "MHz", R_NF2_Freq);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Result_Header = _TestParaName + "_RX" + _RX2Band + "_Ampl";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Result_Data = R_NF2_Ampl;
-
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Result_Header = _TestParaName + "_RX" + _RX2Band + "_FREQ";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Result_Data = R_NF2_Freq;
-                    }
-                    if (_Test_Harmonic)
-                    {
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Ampl", "dBm", R_H2_Ampl);
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Freq", "MHz", R_H2_Freq);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Result_Header = _TestParaName + "_Ampl";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Result_Data = R_H2_Ampl;
-
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Result_Header = _TestParaName + "_Freq";
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Result_Data = R_H2_Freq;
-                    }
-                    if (_Test_MIPI)
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_MIPI", "NA", R_MIPI);
-                    if (_Test_SMU)
-                    {
-                        MeasSMU = _SMUMeasCh.Split(',');
-                        for (int i = 0; i < MeasSMU.Count(); i++)
+                        #region add test result
+                        if (_Test_Pin)
                         {
-                            ResultBuilder.BuildResults(ref results, _TestParaName + "_" + R_SMULabel_ICh[Convert.ToInt16(MeasSMU[i])], "A", R_SMU_ICh[Convert.ToInt16(MeasSMU[i])]);
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Pin", "dBm", R_Pin);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Result_Header = _TestParaName + "_Pin";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Result_Data = R_Pin;
                         }
-                    }
-                    if (_Test_DCSupply)
-                    {
-                        MeasDC = _DCMeasCh.Split(',');
-                        for (int i = 0; i < MeasDC.Count(); i++)
+                        if (_Test_Pout)
                         {
-                            ResultBuilder.BuildResults(ref results, _TestParaName + "_" + R_DCLabel_ICh[Convert.ToInt16(MeasDC[i])], "A", R_DC_ICh[Convert.ToInt16(MeasDC[i])]);
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Pout", "dBm", R_Pout);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Result_Header = _TestParaName + "_Pout";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Result_Data = R_Pout;
                         }
-                    }
-                    if (_Test_Switch)
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Status", "NA", R_Switch);
-                    if (R_RFCalStatus == 1)
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_Status", "NA", R_RFCalStatus);
-                    if (b_TestBoard_temp)
-                    {
-                        ResultBuilder.BuildResults(ref results, _TestParaName, "C", R_Temperature);
-                    }
-                    if (_Test_TestTime)
-                    {
-                        //ResultBuilder.BuildResults(ref results, _TestParaName + "_TestTime" + _TestNum, "mS", tTime.ElapsedMilliseconds);
-                        ResultBuilder.BuildResults(ref results, _TestParaName + "_TestTime" + _TestNum, "mS", tTime.Elapsed.TotalMilliseconds);
-                    }
-                    #endregion
-                }
-                else
-                {
-                    string GE_TestParam = null;
-                    //  Rslt_GE_Header = new s_GE_Header();
-                    //   Decode_GE_Header(TestPara, out Rslt_GE_Header);
-
-                    #region add test result
-                    if (_Test_Pin)
-                    {
-                        Rslt_GE_Header.Param = "_Pin";      //re-assign ge header 
-                                                            //   Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pin);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Result_Data = R_Pin;
-                    }
-                    if (_Test_Pout)
-                    {
-                        Rslt_GE_Header.Param = "_Pout";      //re-assign ge header 
-                                                             //    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pout);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Result_Data = R_Pout;
-                    }
-                    if (_Test_Pin1)
-                    {
-                        Rslt_GE_Header.Param = "_Pin1";      //re-assign ge header 
-                                                             //    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pin1);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Result_Data = R_Pin1;
-                    }
-                    if (_Test_Pout1)
-                    {
-                        Rslt_GE_Header.Param = "_Pout1";      //re-assign ge header 
-
-
-                        //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pout1);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Result_Data = R_Pout1;
-                    }
-                    if (_Test_Pin2)
-                    {
-                        Rslt_GE_Header.Param = "_Pin2";      //re-assign ge header 
-                                                             //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pin2);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Result_Data = R_Pin2;
-                    }
-                    if (_Test_Pout2)
-                    {
-                        Rslt_GE_Header.Param = "_Pout2";      //re-assign ge header 
-                                                              //    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pout2);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Result_Data = R_Pout2;
-                    }
-                    if (_Test_NF1)
-                    {
-                        //if (Cs._TestParam.ToUpper() == "PXI_RXPATH_GAIN_NF")
-                        //{
-                        //    Rslt_GE_Header.Freq1 = "_Rx-" + Convert.ToString(Math.Round(_StartRXFreq1, 6)) + "MHz";  // Start Freq
-                        //    Rslt_GE_Header.Freq2 = "_Rx-" + Convert.ToString(Math.Round(_StopRXFreq1, 6)) + "MHz";  // Stop Freq
-                        //}
-                        Rslt_GE_Header.Param = "_Gain_RX-Ampl";      //re-assign ge header 
-                                                                     //      Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_NF1_Ampl);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Result_Data = R_NF1_Ampl;
-
-                        Rslt_GE_Header.Param = "_Gain_RX-Ampl-Freq";      //re-assign ge header
-                                                                          //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "MHz", R_NF1_Freq);
-
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Result_Data = R_NF1_Freq;
-                    }
-                    if (_Test_NF2)
-                    {
-                        Rslt_GE_Header.Param = Rslt_GE_Header.Param + "-Ampl";      //re-assign ge header 
-                                                                                    //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_NF2_Ampl);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Result_Data = R_NF2_Ampl;
-
-                        Rslt_GE_Header.Param = Rslt_GE_Header.Param + "-Freq";      //re-assign ge header
-                                                                                    //        Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "MHz", R_NF2_Freq);
-
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Result_Data = R_NF2_Freq;
-                    }
-                    if (_Test_Harmonic)
-                    {
-                        Rslt_GE_Header.Param = Rslt_GE_Header.Param + "-Ampl";      //re-assign ge header 
-                                                                                    //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_H2_Ampl);
-
-                        //use as temp data storage for calculating MAX, MIN etc of multiple result
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Result_Data = R_H2_Ampl;
-
-                        Rslt_GE_Header.Param = Rslt_GE_Header.Param + "-Freq";      //re-assign ge header
-                                                                                    //      Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "MHz", R_H2_Freq);
-
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Enable = true;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Result_Header = GE_TestParam;
-                        Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Result_Data = R_H2_Freq;
-                    }
-                    if (_Test_MIPI)
-                    {
-                        Rslt_GE_Header.Note = "_NOTE_" + _TestParaName + "_" + _TestNum;      //re-assign ge header 
-                                                                                              //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Note + "_" + Convert.ToString(Cs._TestNum)], "NA", R_MIPI);
-                    }
-
-                    if (_Test_SMU)
-                    {
-                        MeasSMU = _SMUMeasCh.Split(',');
-                        MeasDC = _DCMeasCh.Split(',');
-                        int ch_cnt = MeasSMU.Count();
-                        double[] smuMeas_I = new double[ch_cnt];
-                        string[] tmp_GE_TestParam = new string[ch_cnt];
-
-                        Rslt_GE_Header.MeasType = "N";      //re-assign ge header 
-                                                            //  Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, R_SMU_ICh, out smuMeas_I, out tmp_GE_TestParam);
-
-                        for (int i = 0; i < MeasSMU.Count(); i++)
+                        if (_Test_Pin1)
                         {
-                            ResultBuilder.BuildResults(ref results, Header[Cs.R_SMULabel_ICh[Convert.ToInt16(Cs.MeasSMU[i])] + "_" + Convert.ToString(Cs._TestNum)], "A", Cs.R_SMU_ICh[Convert.ToInt16(MeasSMU[i])]);
-                        }
-                    }
-                    if (_Test_DCSupply)
-                    {
-                        MeasDC = _DCMeasCh.Split(',');
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Pin1", "dBm", R_Pin1);
 
-                        for (int i = 0; i < MeasDC.Count(); i++)
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Result_Header = _TestParaName + "_Pin1";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Result_Data = R_Pin1;
+                        }
+                        if (_Test_Pout1)
                         {
-                            Rslt_GE_Header.Note = "_NOTE_" + _TestParaName + "_" + R_DCLabel_ICh[Convert.ToInt16(MeasDC[i])];      //re-assign ge header 
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Pout1", "dBm", R_Pout1);
 
-                            string a = Cs._R_DCLabel_ICh[Convert.ToInt16(Cs._MeasDC[i])] + "_" + Convert.ToString(Cs._TestNum);
-
-                            ResultBuilder.BuildResults(ref results, Header[Cs._R_DCLabel_ICh[Convert.ToInt16(Cs._MeasDC[i])] + "_" + Convert.ToString(Cs._TestNum)], "A", R_DC_ICh[Convert.ToInt16(MeasDC[i])]);
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Result_Header = _TestParaName + "_Pout1";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Result_Data = R_Pout1;
                         }
-                    }
-                    if (_Test_Switch)
-                    {
-                        //      Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, GE_TestParam, "NA", R_Switch);
-                    }
-                    if (R_RFCalStatus == 1)
-                    {
-                        //       Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, GE_TestParam, "NA", R_RFCalStatus);
-                    }
-                    if (b_TestBoard_temp)
-                    {
-                        //          Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        ResultBuilder.BuildResults(ref results, GE_TestParam, "C", R_Temperature);
-                    }
-                    if (_Test_TestTime)
-                    {
-                        Rslt_GE_Header.MeasType = "M";      //re-assign ge header 
-                        Rslt_GE_Header.Param = "_TIME";      //re-assign ge header 
-                        Rslt_GE_Header.Note = "_NOTE_" + _TestNum;      //re-assign ge header 
+                        if (_Test_Pin2)
+                        {
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Pin2", "dBm", R_Pin2);
 
-                        //Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
-                        //ResultBuilder.BuildResults(ref results, GE_TestParam, "mS", tTime.ElapsedMilliseconds);
-                        ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "mS", tTime.Elapsed.TotalMilliseconds);
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Result_Header = _TestParaName + "_Pin2";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Result_Data = R_Pin2;
+                        }
+                        if (_Test_Pout2)
+                        {
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Pout2", "dBm", R_Pout2);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Result_Header = _TestParaName + "_Pout2";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Result_Data = R_Pout2;
+                        }
+                        if (_Test_NF1)
+                        {
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_RX" + _RX1Band + "_Ampl", "dBm", R_NF1_Ampl);
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_RX" + _RX1Band + "_Freq", "MHz", R_NF1_Freq);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Result_Header = _TestParaName + "_RX" + _RX1Band + "_Ampl";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Result_Data = R_NF1_Ampl;
+
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Result_Header = _TestParaName + "_RX" + _RX1Band + "_FREQ";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Result_Data = R_NF1_Freq;
+                        }
+                        if (_Test_NF2)
+                        {
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_RX" + _RX2Band + "_Ampl", "dBm", R_NF2_Ampl);
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_RX" + _RX2Band + "_Freq", "MHz", R_NF2_Freq);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Result_Header = _TestParaName + "_RX" + _RX2Band + "_Ampl";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Result_Data = R_NF2_Ampl;
+
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Result_Header = _TestParaName + "_RX" + _RX2Band + "_FREQ";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Result_Data = R_NF2_Freq;
+                        }
+                        if (_Test_Harmonic)
+                        {
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Ampl", "dBm", R_H2_Ampl);
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Freq", "MHz", R_H2_Freq);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Result_Header = _TestParaName + "_Ampl";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Result_Data = R_H2_Ampl;
+
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Result_Header = _TestParaName + "_Freq";
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Result_Data = R_H2_Freq;
+                        }
+                        if (_Test_MIPI)
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_MIPI", "NA", R_MIPI);
+                        if (_Test_SMU)
+                        {
+                            MeasSMU = _SMUMeasCh.Split(',');
+                            for (int i = 0; i < MeasSMU.Count(); i++)
+                            {
+                                ResultBuilder.BuildResults(ref results, _TestParaName + "_" + R_SMULabel_ICh[Convert.ToInt16(MeasSMU[i])], "A", R_SMU_ICh[Convert.ToInt16(MeasSMU[i])]);
+                            }
+                        }
+                        if (_Test_DCSupply)
+                        {
+                            MeasDC = _DCMeasCh.Split(',');
+                            for (int i = 0; i < MeasDC.Count(); i++)
+                            {
+                                ResultBuilder.BuildResults(ref results, _TestParaName + "_" + R_DCLabel_ICh[Convert.ToInt16(MeasDC[i])], "A", R_DC_ICh[Convert.ToInt16(MeasDC[i])]);
+                            }
+                        }
+                        if (_Test_Switch)
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Status", "NA", R_Switch);
+                        if (R_RFCalStatus == 1)
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_Status", "NA", R_RFCalStatus);
+                        if (b_TestBoard_temp)
+                        {
+                            ResultBuilder.BuildResults(ref results, _TestParaName, "C", R_Temperature);
+                        }
+                        if (_Test_TestTime)
+                        {
+                            //ResultBuilder.BuildResults(ref results, _TestParaName + "_TestTime" + _TestNum, "mS", tTime.ElapsedMilliseconds);
+                            ResultBuilder.BuildResults(ref results, _TestParaName + "_TestTime" + _TestNum, "mS", tTime.Elapsed.TotalMilliseconds);
+                        }
+                        #endregion
                     }
-                    #endregion
+                    else
+                    {
+                        string GE_TestParam = null;
+                        //  Rslt_GE_Header = new s_GE_Header();
+                        //   Decode_GE_Header(TestPara, out Rslt_GE_Header);
+
+                        #region add test result
+                        if (_Test_Pin)
+                        {
+                            Rslt_GE_Header.Param = "_Pin";      //re-assign ge header 
+                                                                //   Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pin);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN].Result_Data = R_Pin;
+                        }
+                        if (_Test_Pout)
+                        {
+                            Rslt_GE_Header.Param = "_Pout";      //re-assign ge header 
+                                                                 //    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pout);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT].Result_Data = R_Pout;
+                        }
+                        if (_Test_Pin1)
+                        {
+                            Rslt_GE_Header.Param = "_Pin1";      //re-assign ge header 
+                                                                 //    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pin1);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN1].Result_Data = R_Pin1;
+                        }
+                        if (_Test_Pout1)
+                        {
+                            Rslt_GE_Header.Param = "_Pout1";      //re-assign ge header 
+
+
+                            //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pout1);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT1].Result_Data = R_Pout1;
+                        }
+                        if (_Test_Pin2)
+                        {
+                            Rslt_GE_Header.Param = "_Pin2";      //re-assign ge header 
+                                                                 //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pin2);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.PIN2].Result_Data = R_Pin2;
+                        }
+                        if (_Test_Pout2)
+                        {
+                            Rslt_GE_Header.Param = "_Pout2";      //re-assign ge header 
+                                                                  //    Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_Pout2);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.POUT2].Result_Data = R_Pout2;
+                        }
+                        if (_Test_NF1)
+                        {
+                            //if (Cs._TestParam.ToUpper() == "PXI_RXPATH_GAIN_NF")
+                            //{
+                            //    Rslt_GE_Header.Freq1 = "_Rx-" + Convert.ToString(Math.Round(_StartRXFreq1, 6)) + "MHz";  // Start Freq
+                            //    Rslt_GE_Header.Freq2 = "_Rx-" + Convert.ToString(Math.Round(_StopRXFreq1, 6)) + "MHz";  // Stop Freq
+                            //}
+                            Rslt_GE_Header.Param = "_Gain_RX-Ampl";      //re-assign ge header 
+                                                                         //      Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_NF1_Ampl);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_AMPL].Result_Data = R_NF1_Ampl;
+
+                            Rslt_GE_Header.Param = "_Gain_RX-Ampl-Freq";      //re-assign ge header
+                                                                              //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "MHz", R_NF1_Freq);
+
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF1_FREQ].Result_Data = R_NF1_Freq;
+                        }
+                        if (_Test_NF2)
+                        {
+                            Rslt_GE_Header.Param = Rslt_GE_Header.Param + "-Ampl";      //re-assign ge header 
+                                                                                        //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_NF2_Ampl);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_AMPL].Result_Data = R_NF2_Ampl;
+
+                            Rslt_GE_Header.Param = Rslt_GE_Header.Param + "-Freq";      //re-assign ge header
+                                                                                        //        Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "MHz", R_NF2_Freq);
+
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.NF2_FREQ].Result_Data = R_NF2_Freq;
+                        }
+                        if (_Test_Harmonic)
+                        {
+                            Rslt_GE_Header.Param = Rslt_GE_Header.Param + "-Ampl";      //re-assign ge header 
+                                                                                        //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "dBm", R_H2_Ampl);
+
+                            //use as temp data storage for calculating MAX, MIN etc of multiple result
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_AMPL].Result_Data = R_H2_Ampl;
+
+                            Rslt_GE_Header.Param = Rslt_GE_Header.Param + "-Freq";      //re-assign ge header
+                                                                                        //      Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "MHz", R_H2_Freq);
+
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Enable = true;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Result_Header = GE_TestParam;
+                            Results[TestCount].Multi_Results[(int)e_ResultTag.HARMONIC_FREQ].Result_Data = R_H2_Freq;
+                        }
+                        if (_Test_MIPI)
+                        {
+                            Rslt_GE_Header.Note = "_NOTE_" + _TestParaName + "_" + _TestNum;      //re-assign ge header 
+                                                                                                  //     Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, _Test_SMU);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Note + "_" + Convert.ToString(Cs._TestNum)], "NA", R_MIPI);
+                        }
+
+                        if (_Test_SMU)
+                        {
+                            MeasSMU = _SMUMeasCh.Split(',');
+                            MeasDC = _DCMeasCh.Split(',');
+                            int ch_cnt = MeasSMU.Count();
+                            double[] smuMeas_I = new double[ch_cnt];
+                            string[] tmp_GE_TestParam = new string[ch_cnt];
+
+                            Rslt_GE_Header.MeasType = "N";      //re-assign ge header 
+                                                                //  Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, R_SMU_ICh, out smuMeas_I, out tmp_GE_TestParam);
+
+                            for (int i = 0; i < MeasSMU.Count(); i++)
+                            {
+                                ResultBuilder.BuildResults(ref results, Header[Cs.R_SMULabel_ICh[Convert.ToInt16(Cs.MeasSMU[i])] + "_" + Convert.ToString(Cs._TestNum)], "A", Cs.R_SMU_ICh[Convert.ToInt16(MeasSMU[i])]);
+                            }
+                        }
+                        if (_Test_DCSupply)
+                        {
+                            MeasDC = _DCMeasCh.Split(',');
+
+                            for (int i = 0; i < MeasDC.Count(); i++)
+                            {
+                                Rslt_GE_Header.Note = "_NOTE_" + _TestParaName + "_" + R_DCLabel_ICh[Convert.ToInt16(MeasDC[i])];      //re-assign ge header 
+
+                                string a = Cs._R_DCLabel_ICh[Convert.ToInt16(Cs._MeasDC[i])] + "_" + Convert.ToString(Cs._TestNum);
+
+                                ResultBuilder.BuildResults(ref results, Header[Cs._R_DCLabel_ICh[Convert.ToInt16(Cs._MeasDC[i])] + "_" + Convert.ToString(Cs._TestNum)], "A", R_DC_ICh[Convert.ToInt16(MeasDC[i])]);
+                            }
+                        }
+                        if (_Test_Switch)
+                        {
+                            //      Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, GE_TestParam, "NA", R_Switch);
+                        }
+                        if (R_RFCalStatus == 1)
+                        {
+                            //       Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, GE_TestParam, "NA", R_RFCalStatus);
+                        }
+                        if (b_TestBoard_temp)
+                        {
+                            //          Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            ResultBuilder.BuildResults(ref results, GE_TestParam, "C", R_Temperature);
+                        }
+                        if (_Test_TestTime)
+                        {
+                            Rslt_GE_Header.MeasType = "M";      //re-assign ge header 
+                            Rslt_GE_Header.Param = "_TIME";      //re-assign ge header 
+                            Rslt_GE_Header.Note = "_NOTE_" + _TestNum;      //re-assign ge header 
+
+                            //Construct_GE_Header(TestPara, Rslt_GE_Header, DicTestLabel, MeasBand, out GE_TestParam, b_SmuHeader);
+                            //ResultBuilder.BuildResults(ref results, GE_TestParam, "mS", tTime.ElapsedMilliseconds);
+                            ResultBuilder.BuildResults(ref results, Header[Rslt_GE_Header.Param + "_" + Convert.ToString(Cs._TestNum)], "mS", tTime.Elapsed.TotalMilliseconds);
+                        }
+                        #endregion
+                    }
                 }
             }
             catch (Exception ex)
