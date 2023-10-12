@@ -18,9 +18,9 @@
 
 #region Test Plan Properties Section (NO MANUAL TOUCH)
 ////<TestPlanVersion>TestPlanVersion=1<TestPlanVersion/>
-////<ExcelBuddyConfig>BuddyExcel = ENGR-8234-AP2-NS_BE-PXI-NI_Proto1_TCF_Rev0002.xlsx;ExcelDisplay = 1<ExcelBuddyConfig/>
-////<TestLimitBuddyConfig>BuddyTestLimit = ENGR-8234-AP2-NS_BE-PXI-NI_Proto1_TSF_Rev0002.csv<TestLimitBuddyConfig/>
-////<CorrelationBuddyConfig>BuddyCorrelaton = ENGR-8234-AP2-NS_BE-PXI-NI_Proto1_CF_Rev0002.csv<CorrelationBuddyConfig/>
+////<ExcelBuddyConfig>BuddyExcel = AFEM-8233-AP1-NS_BE-PXI-NI_DVT_TCF_Rev0004.xlsx;ExcelDisplay = 1<ExcelBuddyConfig/>
+////<XTestLimitBuddyConfig>BuddyTestLimit = AFEM-8233-AP1-NS_BE-PXI-NI_DVT_TSF_Rev0002.csv<TestLimitBuddyConfig/>
+////<XCorrelationBuddyConfig>BuddyCorrelaton = AFEM-8233-AP1-NS_BE-PXI-NI_DVT_CF_Rev0002.csv<CorrelationBuddyConfig/>
 #endregion Test Plan Properties Section
 
 
@@ -71,7 +71,7 @@ using TestPlanCommon;
 #endregion Custom Reference Section
 
 
-public class ENGR_8234_AP2_NS_PROD_Proto1B_Rev0000 : MarshalByRefObject, IATFTest
+public class Boone_HBPAD_NS_Proto2B_Rev0000 : MarshalByRefObject, IATFTest
 {
     private IATFTest testPlan = new TestPlan_BansheeFull.BansheeNF();
 

@@ -801,6 +801,8 @@ namespace MyProduct
             }
             #endregion
 
+            Eq.Site[0]._EqVST.rfsgSession.Abort();
+
             Eq.Site[0]._EqSwitch.SaveLocalMechSwStatusFile();
 
      
@@ -11885,7 +11887,9 @@ namespace MyProduct
 
                             testtime4 = tTime.ElapsedMilliseconds;
 
-                            Task taskConfigSW = Task.Run(() => SetswitchPath_Thread(DicCalInfo, DataFilePath.LocSettingPath, TCF_Header.ConstSwitching_Band_HotNF, Cs._SwBand_HotNF, Cs._Setup_Delay));
+                            Task taskConfigSW = Task.Run(() => 
+                            
+                            SetswitchPath_Thread(DicCalInfo, DataFilePath.LocSettingPath, TCF_Header.ConstSwitching_Band_HotNF, Cs._SwBand_HotNF, Cs._Setup_Delay));
 
 
                             Eq.Site[0]._EqVST.ConfigureTriggers_ForCold();
@@ -12356,7 +12360,6 @@ namespace MyProduct
 
                             if (_Test_SMU)
                             {
-
 
                                 DelayMs(_RdCurr_Delay);
 
@@ -17144,8 +17147,8 @@ namespace MyProduct
                 for (int i = 0; i < NumberOfRunsColdNF; i++)
                 {
                     Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i, ref Th.coldsource, ref Th.dutnoisefigure);
-                  //  Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i);
-
+                    //  Eq.Site[0]._EqRFmx.cRFmxNF.RetrieveResults_NFColdSource(Th.ColdNF_TestCount, 0, "result::" + "COLD" + Th.ColdNF_TestCount.ToString() + "_" + i);
+      
                     for (int j = 0; j < Nop_ColdNF; j++)
                     {
                         double Cold_NF_withoutGain = (Th.dutnoisefigure[j].ToString().Contains("NaN") || Th.dutnoisefigure[j].ToString().Contains("Infinity") || Th.dutnoisefigure[j].ToString().Contains("∞")) ? 9999 : Th.dutnoisefigure[j];
@@ -17815,7 +17818,8 @@ namespace MyProduct
             public string[] _str;
             public double[] _FreqRamp;
 
-            public ComplexDouble[] _ArbitraryWaveform;
+            public Dictionary<int, ComplexDouble[]> _ArbitraryWaveform;
+   
             public int _TotalSamples;
             public string _MipiCommand;
 

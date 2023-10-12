@@ -875,7 +875,7 @@ namespace ProductionLib2
                 //if (txtMfgLotID.Text == null)
                 //    MessageBox.Show("No matching for MfgLot ID " + "(" + txtMfgLotID.Text + ")" + ", please re-enter!");
 
-                passflag_MfgID = true;
+               // passflag_MfgID = true;
 
                 if (Webservice_Flag == true)
                 {

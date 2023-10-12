@@ -48,10 +48,11 @@ namespace TestPlanCommon
             LoggingManager.Instance.LogInfoTestPlan("Waiting for Production Information...");
 
             prodInputForm = new ProductionLib2.ProductionTestInputForm(
-                IsEngineeringGUI: webQueryValidation.CIvEquals("TRUE") || !sample_version.CIvEquals("PRODUCTION"),
+                IsEngineeringGUI: webQueryValidation.CIvEquals("FALSE") || !sample_version.CIvEquals("PRODUCTION"),
                 webQueryValidation: webQueryValidation,
                 webServerURL: webServerUrl,
                 Clotho_User: ClothoDataObject.Instance.USERTYPE);
+
 
             string tempLotID = ATFCrossDomainWrapper.GetStringFromCache(PublishTags.PUBTAG_LOT_ID, "");
             prodInputForm.LotID = tempLotID;        //Pass LotID to production GUI.

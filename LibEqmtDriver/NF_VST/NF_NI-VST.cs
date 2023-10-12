@@ -2360,7 +2360,7 @@ namespace LibEqmtDriver.NF_VST
                     }
 
                     ThreadPool.QueueUserWorkItem(Thread_Config_SA, SARefLevel);
-                    ThreadPool.QueueUserWorkItem(Thread_Config_SG, TestNum);
+                    ThreadPool.QueueUserWorkItem(Thread_Config_SG, TestNum + i.ToString());
 
 
                     taskConfigSW.Wait();
@@ -2394,6 +2394,7 @@ namespace LibEqmtDriver.NF_VST
 
                 if (Convert.ToInt16(Math.Ceiling((_stopFreq - _startFreq))) > 100 && IQRate < 250E6)
                     Array.Copy(dataList[1], (_NumberOfSteps % 2 == 0 ? 0 : 1), data, dataList[0].Length, dataList[1].Length - (_NumberOfSteps % 2 == 0 ? 0 : 1));
+
 
                 testtime12 = tTime.ElapsedMilliseconds;
                 ReConfigVST();
@@ -2710,12 +2711,20 @@ namespace LibEqmtDriver.NF_VST
             ////// set reference level of RFSA //
           //  rfsaSession.Configuration.Vertical.ReferenceLevel = SARefLevel; //= InherentReferenceLevel + ReferenceLevelAdjustment;
         }
-        public void writeWaveForm(string Name, ComplexDouble[] Data)
+        public void writeWaveForm(string Name, Dictionary<int, ComplexDouble[]> Data)
         {
-     
-                rfsgSession.Arb.WriteWaveform("LNAFrequencySweep" + Name, Data);
 
-        
+            int count = 0;
+
+            foreach(ComplexDouble[] Signal in Data.Values)
+            {
+                rfsgSession.Arb.WriteWaveform("LNAFrequencySweep" + Name + count.ToString(), Signal);
+                count++;
+
+            }
+
+
+
         }
         private void ConfigureScript(string Name)
         {
@@ -2878,7 +2887,7 @@ namespace LibEqmtDriver.NF_VST
 
             //   rfsaSession.Utility.Reset();
             //   rfsgSession.Utility.Reset();
-            //      rfsgSession.Abort();
+                 rfsgSession.Abort();
 
 
         }
@@ -3191,7 +3200,7 @@ namespace LibEqmtDriver.NF_VST
             SamplesPerStep = (int)Math.Ceiling(dwellT * IQRate);
             SweepSamples = SamplesPerStep * NumberOfSteps;
 
-         //   ConfigureArbitraryWaveform();
+            //   ConfigureArbitraryWaveform();
             ConfigureScript(Convert.ToString(TestNum));
 
             rfsgSession.RF.Configure(CenterFrequency, RFSGPowerLevel);
@@ -3216,12 +3225,11 @@ namespace LibEqmtDriver.NF_VST
 
             rfsaSession.Configuration.Triggers.StartTrigger.Disable();
 
-
-
+ 
 
             rfsaSession.Configuration.IQ.CarrierFrequency = CenterFrequency;    //Seoul amplitude offset to NF
             rfsaSession.Configuration.IQ.IQRate = IQRate;
-
+            rfsaSession.Acquisition.Advanced.DownconverterFrequencyOffset = -0;
 
             rfsaSession.Configuration.IQ.NumberOfSamples = TotalNumber;
             rfsaSession.Configuration.IQ.NumberOfRecords = 1;

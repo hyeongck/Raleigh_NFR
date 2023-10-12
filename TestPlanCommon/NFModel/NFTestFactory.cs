@@ -1374,36 +1374,77 @@ namespace TestPlanCommon.NFModel
                                         test._Mipi_Command.Add(Mipi_Dic);
                                     }
 
-                                    test._FreqRamp = RampPattern(test._StartRXFreq1 * 1e6, test._StopRXFreq1 * 1e6, test._StepRXFreq1 * 1e6, test._RxFreq1NoOfPts);
-
-                               
+  
                                     int NumberOfSteps = test._RxFreq1NoOfPts;
                                     int SamplesPerStep = (int)Math.Ceiling(1e-6 * IQRate);
                                     int SweepSamples = SamplesPerStep * NumberOfSteps;
                                     int TotalSamples = 0;
 
+                                    double[] StartFreqList;
+                                    double[] StopFreqList;
 
-                                    double CenterFrequency = (test._StartRXFreq1 + test._StopRXFreq1) / 2;
-                                    //// create tone to upconvert //
-                                    ComplexDouble[] Tone = CarrierWave(SamplesPerStep);
-                                    //// initialize arbitrary waveform //
-                                    ComplexDouble[] ArbitraryWaveform = new ComplexDouble[SweepSamples];
-                                    // sythesize waveform //
-                                    for (int i = 0; i < NumberOfSteps; i++)
+                                    if (Convert.ToInt16(Math.Ceiling((test._StopRXFreq1 - test._StartRXFreq1))) > 100 && IQRate < 250E6)
                                     {
-                                        // calculate baseband frequency //
-                                        double FrequencyOffset = test._FreqRamp[i] - (CenterFrequency * 1e6) ;
-                                        // upconvert waveform //
-                                        ComplexDouble[] UpconvertedTone = Upconvert(Tone, IQRate, FrequencyOffset, i == 0);
-                                        // copy into arbitrary waveform //
-                                        Array.Copy(UpconvertedTone, 0, ArbitraryWaveform, i * SamplesPerStep, SamplesPerStep);
+                                        StartFreqList = new double[2];
+                                        StopFreqList = new double[2];
+
+                                        StartFreqList[0] = test._StartRXFreq1;
+                                        StopFreqList[0] = test._StartRXFreq1 + Math.Ceiling(((double)NumberOfSteps / 2) - 1) * test._StepRXFreq1;
+
+                                        StartFreqList[1] = StopFreqList[0] + (NumberOfSteps % 2 == 0 ? 1 : 0) * test._StepRXFreq1;
+                                        StopFreqList[1] = test._StopRXFreq1;
+
                                     }
-                                    // put key at the end of the waveform //
-                                    ComplexDouble[] Key = Upconvert(Tone, IQRate, 0, false); // keeps phase coherent between key and last frequency
-                                    Key = DigitalGain(Key, -10); // hardcoded key drop of 10 dBm
-                                    test._ArbitraryWaveform = ArbitraryWaveform.Concat(Key).Concat(Key).ToArray();
-                                    test._TotalSamples = SweepSamples + Tone.Length;
-                                    // write arb waveform to rfsg //
+                                    else
+                                    {
+                                        StartFreqList = new double[1];
+                                        StopFreqList = new double[1];
+
+                                        StartFreqList[0] = test._StartRXFreq1;
+                                        StopFreqList[0] = test._StopRXFreq1;
+                                    }
+
+                                    test._ArbitraryWaveform = new Dictionary<int, ComplexDouble[]>();
+
+                                    for (int j = 0; j < StartFreqList.Length; j++)
+                                    {
+                              
+
+                                        double startFreq = StartFreqList[j];
+                                        double stopFreq = StopFreqList[j];
+
+                                        double StartFrequency = startFreq * 1E6;
+                                        double StopFrequency = stopFreq * 1E6;
+                                        double StepFrequency = test._StepRXFreq1 * 1E6;
+                                        double CenterFrequency = (StartFrequency + StopFrequency) / 2;
+                                        NumberOfSteps = Convert.ToInt16(Math.Ceiling(Math.Round((stopFreq - startFreq) / test._StepRXFreq1, 6)) + 1);
+
+                                        SweepSamples = SamplesPerStep * NumberOfSteps;
+                                        //    double CenterFrequency = (test._StartRXFreq1 + test._StopRXFreq1) / 2;
+                                        //// create tone to upconvert //
+                                        test._FreqRamp = RampPattern(startFreq * 1e6, stopFreq * 1e6, StepFrequency, NumberOfSteps);
+
+                                        ComplexDouble[] Tone = CarrierWave(SamplesPerStep);
+                                        //// initialize arbitrary waveform //
+                                        ComplexDouble[] ArbitraryWaveform = new ComplexDouble[SweepSamples];
+                                        // sythesize waveform //
+                                        for (int i = 0; i < NumberOfSteps; i++)
+                                        {
+                                            // calculate baseband frequency //
+                                            double FrequencyOffset = test._FreqRamp[i] - (CenterFrequency);
+                                            // upconvert waveform //
+                                            ComplexDouble[] UpconvertedTone = Upconvert(Tone, IQRate, FrequencyOffset, i == 0);
+                                            // copy into arbitrary waveform //
+                                            Array.Copy(UpconvertedTone, 0, ArbitraryWaveform, i * SamplesPerStep, SamplesPerStep);
+                                        }
+                                        // put key at the end of the waveform //
+                                        ComplexDouble[] Key = Upconvert(Tone, IQRate, 0, false); // keeps phase coherent between key and last frequency
+                                        Key = DigitalGain(Key, -10); // hardcoded key drop of 10 dBm
+                                        test._ArbitraryWaveform.Add(j, ArbitraryWaveform.Concat(Key).Concat(Key).ToArray());
+
+                                            test._TotalSamples = SweepSamples + Tone.Length;
+                                        // write arb waveform to rfsg //
+                                    }
 
                                     double testtime2 = tTime.ElapsedMilliseconds;
 
